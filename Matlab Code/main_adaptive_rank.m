@@ -15,7 +15,7 @@ addpath("./Data/");
 %% Run and time experiments
 S = 1; %number of runs
 
-tol = 1e-1;
+tol = 1e-2;
 
 
 errorsLR = zeros(1,S);
