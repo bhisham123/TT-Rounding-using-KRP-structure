@@ -1,76 +1,109 @@
-function X = TTrounding_Orthogonalize_then_Randomize_Adaptive(Y, tol, l)
-    if (nargin == 2)
-        l = 0;
-    end
+function X = TTrounding_Orthogonalize_then_Randomize_Adaptive(Y, tol, init_f, incr_f)
+%TTrounding_Orthogonalize_then_Randomize_Adaptive: Adaptive TT-rounding which first perform orthogonalization followed by random sketching.
+%
+%   X = TTrounding_Orthogonalize_then_Randomize_Adaptive(Y, tol, init_f, incr_f, use_svd_filtering)
+%   
+%   Performs adaptive Tensor-Train (TT) rounding by first perfroming orthogonalizing
+%   of the input tensor from right to left followed by randomized projections from left to right
+%   This method avoids explicit full SVDs by using random sketching and uses incremental QR-based 
+%   basis construction.
+%
+%   Inputs:
+%     - Y                : A TT-tensor represented as a cell array of vertically 
+%                          unfolded cores (size N-by-1).
+%     - tol              : Desired relative approximation tolerance (Frobenius norm).
+%     - init_f           : Initial factor to determine starting block size for projection, 
+%                          computed as floor(rank(n+1)/init_f). Default value is 5.
+%     - incr_f           : Incremental factor used to compute the block size of
+%                          incremental QR, i.e., b = floor(R(n+1)/incr_f).
+%                          The default value of incr_f is 20.
+% 
+%   Output:
+%     - X                : A TT-tensor (cell array) with reduced TT-ranks 
+%                          that approximates the original tensor Y within the specified tolerance.
+%
+
+
+
+% ----------- Default Parameters --------------
+if nargin < 4 || isempty(incr_f)
+    incr_f = 20;
+end
+if nargin < 3 || isempty(init_f)
+    init_f = 5;
+end
+
+
+X = TTorthogonalizeRL(Y); %Right to left orthogonalization of cores
+[N,I,rank] = TTsizes(X);
+
+
+normX = norm(X{1}, 'fro'); % compute norm of tensor X
+
+tau = tol * normX /sqrt(N - 1);  %error distributed to each core
     
-    X = TTorthogonalizeRL(Y);
-    [N,I,rx] = TTsizes(X);
+% Rounding the tensor cores form left to right
+for n = 1 : N-1
+    Init_b = max(floor(rank(n+1)/init_f),2); %initial block size
+    orthogonal_cols = 0; 
+
+    % if n > 1
+    %     actual_norm_sq = est_norm_sq;  %TTnorm(X(n:N));
+    % else
+    %     actual_norm_sq = normX^2;
+    % end
+   
+    current_core = X{n};
+    [~,cols] = size(current_core);
+    next_core    = X{n+1};
+
+    [X{n},~] = qr(current_core * randn(rank(n+1), Init_b), 0); %tall and skinny QR
     
+    %compute the low rank approximation 
+    M = X{n}'*current_core;
+    X{n+1} = h2v(M * v2h(next_core, I(n+1)), I(n+1)); 
+
+    orthogonal_cols = orthogonal_cols + Init_b; %update the orthogonal columns count
     
-    normX = norm(X{1}, 'fro');
-    local_tol = tol * normX /sqrt(N - 1);    % Truncation threshold
-    
-    % Err = [];
-    
-    % Rounding the tensor cores form left to right
-    for n = 1 : N-1
-        b = 10;
-        reduced_cols = b;
-        if n > 1
-            actual_norm_sq = est_norm_sq;  %TTnorm(X(n:N));
-        else
-            actual_norm_sq = normX^2;
+    % est_norm_sq = norm(M,'fro')^2;
+    % diff = sqrt(abs(actual_norm_sq - est_norm_sq));
+
+    b = max(floor(rank(n+1)/incr_f),2); %block size for increment
+
+    S = current_core * randn(rank(n+1), b); %Sketch compuation
+    S = S - X{n}*(X{n}'*S); % Remove the directions already computed (orthogonalization)
+
+    while (norm(S,'fro')/sqrt(b) > tau) 
+        b = min(b,cols - orthogonal_cols); 
+        if b <= 0
+            break
         end
-       
-        current_core = X{n};
-        [rows,cols] = size(current_core);
-        next_core    = X{n+1};
+
+        S = S(:,1:b);
+        [Q,~] = qr(S, 0); %tall and skinny QR
+
+        %Internal Reorthogonalization
+        [Q,~] = qr(Q - X{n}*(X{n}'*Q),0);
+
+        X{n} = [X{n},Q]; %Add new directions
         
-        if b  > cols 
-            b = cols;
-        end
-    
-        [X{n},~] = qr(current_core * randn(rx(n+1), b), 0);
-        
-        M = X{n}'*current_core;
-        X{n+1} = h2v(M * v2h(next_core, I(n+1)), I(n+1));
-        est_norm_sq = norm(M,'fro')^2;
-        % est_norm_sq = norm(X{n+1},'fro')^2;
-        diff = sqrt(abs(actual_norm_sq - est_norm_sq));
-    
-        while (diff > local_tol) 
-            if (reduced_cols + b) > cols 
-                b = cols - reduced_cols;
-                if b == 0
-                    break;
-                end
-            end
-    
-            S = current_core * randn(rx(n+1), b);
-            S = S - X{n}*(X{n}'*S);
-            % Re-orthognalization Step
-            S = S - X{n}*(X{n}'*S);
-            [Q,~] = qr(S, 0);
-            X{n} = [X{n},Q];
-            
-            M = Q'*current_core;
-            T = M * v2h(next_core, I(n+1));
-            X{n+1} = h2v([v2h(X{n+1}, I(n+1)); T],I(n+1));
-    
-            est_norm_sq = est_norm_sq + norm(M,'fro')^2;
-            % est_norm_sq = est_norm_sq + norm(T,'fro')^2;
-    
-            % err = actual_norm_sq - est_norm_sq;
-            % if err < 0
-            %     err
-            %     size(X{n},2)
-            %     size(Y{n},2)
-            %     normality_error = norm(X{n}'*X{n}-eye(size(X{n},2)),'fro')
-            % end
-            
-            diff = sqrt(abs(actual_norm_sq - est_norm_sq));
-            reduced_cols = reduced_cols +b;
-        end 
-        % Err(n) = diff;
-    end
+        M = Q'*current_core;
+        T = M * v2h(next_core, I(n+1));
+        X{n+1} = h2v([v2h(X{n+1}, I(n+1)); T],I(n+1));
+
+        orthogonal_cols = orthogonal_cols + b;    %update the orthogonal columns count
+
+        % % Error compuation
+        % est_norm_sq = est_norm_sq + norm(M,'fro')^2;
+        % diff = sqrt(abs(actual_norm_sq - est_norm_sq));
+
+        S = current_core * randn(rank(n+1), b); %Sketch compuation
+        S = S - X{n}*(X{n}'*S); % Remove the directions already computed (orthogonalization)
+
+    end 
+    % if norm(X{n}'*X{n} -eye(size(X{n},2)),'fro') > 1e-10
+    %     disp(['KRP for n = ',num2str(n), ', error = ', num2str(norm(X{n}'*X{n} -eye(size(X{n},2)),'fro'))])
+    %     disp(' ')
+    % end
+end
 end

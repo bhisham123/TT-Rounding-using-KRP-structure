@@ -4,17 +4,14 @@ close("all")
 maxNumCompThreads(1);
 
 %% Add path
-addpath("../TTcore/");
-addpath("../TTrandomized");
-addpath("../Data/");
-
-
-
-
+addpath("./TTcore/");
+addpath("./TTrandomized");
+addpath("./Data/");
+addpath("./Thermal_Radiation_Transport/")
 %% Run and time experiments
 S = 2; %number of runs
 
-tol = 1e-2;
+tol = 1e-5;
 over_sample = [3,5,7]; %[1,2,3,5,7];
 L = length(over_sample);
 
@@ -93,11 +90,18 @@ norm_TT = TTnorm(TT);
 % TT{10} = unfold(tensor(cores{10}),[1,2]); 
 % norm_TT = TTnorm(TT);
 % 
-% 
+%% Thermal Radiation Transport
+% load("data1_99992.mat")
+% TT = cell(N,1);
+% TT{1} = core{1};
+% TT{2} = reshape(core{2},[],size(core{2},3));
+% TT{3} = reshape(core{3},[],1);
+% [~,I,R] = TTsizes(TT);
+% norm_TT = TTnorm(TT);
+
  
 X = TTrounding(TT, tol);
 for i=1:L
-
     p = over_sample(i)
     
     rank(1) = 1;
@@ -140,7 +144,7 @@ for i=1:L
     
     for s=1:S
         start = tic;
-        Y_RandKtr =  TTrounding_KTR(TT, rankp);
+        Y_RandKtr =  TTroundingKRP(TT, rankp);
         timeRandKtr(i,s) = toc(start);
         errorsRandKtr(i,s) = TTnorm(TTaxby(1,TT,-1,Y_RandKtr), "OLR") / norm_TT;
     end

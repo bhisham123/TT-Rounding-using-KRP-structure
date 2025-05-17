@@ -19,3 +19,4 @@ for n = 1 : N-1
     M = X{n}'*Z;
     X{n+1} = h2v(M * v2h(X{n+1}, I(n+1)), I(n+1));
 end
+end

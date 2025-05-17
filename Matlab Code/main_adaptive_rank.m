@@ -7,15 +7,11 @@ maxNumCompThreads(1);
 addpath("./TTcore/");
 addpath("./TTrandomized");
 addpath("./Data/");
-
-
-
-
-
+addpath("./Thermal_Radiation_Transport/")
 %% Run and time experiments
 S = 1; %number of runs
 
-tol = 1e-2;
+tol = 1e-3;
 
 
 errorsLR = zeros(1,S);
@@ -30,45 +26,45 @@ timeRandKtr = zeros(1,S);
 
 
 % % % Matern data
-% d = 100;
-% file_name = "matern_data.mat";
-% load(file_name)
-% 
-% actual_rank = double(ranks);
-% I = double(d)*ones(N,1);
-% 
-% TT = cell(N,1);
-% TT{1} = unfold(tensor(cores.core1),[1,2]);
-% TT{2} = unfold(tensor(cores.core2),[1,2]);
-% TT{3} = unfold(tensor(cores.core3),[1,2]);
-% TT{4} = unfold(tensor(cores.core4),[1,2]);
-% TT{5} = unfold(tensor(cores.core5),[1,2]);
-% TT{6} = unfold(tensor(cores.core6),[1,2]);
-% TT{7} = unfold(tensor(cores.core7),[1,2]);
-% TT{8} = unfold(tensor(cores.core8),[1,2]);
-% norm_TT = TTnorm(TT);
+d = 100;
+file_name = "matern_data.mat";
+load(file_name)
 
-
-%%% H2O
-d = 16;
-file_name = "h2o_stog3_tol1e16.mat";
-load(file_name);
-
-
-rank = double(ranks);
+actual_rank = double(ranks);
 I = double(d)*ones(N,1);
+
 TT = cell(N,1);
-TT{1} = unfold(tensor(cores{1}),[1,2]);
-TT{2} = unfold(tensor(cores{2}),[1,2]);
-TT{3} = unfold(tensor(cores{3}),[1,2]);
-TT{4} = unfold(tensor(cores{4}),[1,2]);
-TT{5} = unfold(tensor(cores{5}),[1,2]);
-TT{6} = unfold(tensor(cores{6}),[1,2]);
-TT{7} = unfold(tensor(cores{7}),[1,2]);
+TT{1} = unfold(tensor(cores.core1),[1,2]);
+TT{2} = unfold(tensor(cores.core2),[1,2]);
+TT{3} = unfold(tensor(cores.core3),[1,2]);
+TT{4} = unfold(tensor(cores.core4),[1,2]);
+TT{5} = unfold(tensor(cores.core5),[1,2]);
+TT{6} = unfold(tensor(cores.core6),[1,2]);
+TT{7} = unfold(tensor(cores.core7),[1,2]);
+TT{8} = unfold(tensor(cores.core8),[1,2]);
 norm_TT = TTnorm(TT);
 
 
-% % % %%% N_2 molecule
+%%% H2O
+% d = 16;
+% file_name = "h2o_stog3_tol1e16.mat";
+% load(file_name);
+% 
+% 
+% rank = double(ranks);
+% I = double(d)*ones(N,1);
+% TT = cell(N,1);
+% TT{1} = unfold(tensor(cores{1}),[1,2]);
+% TT{2} = unfold(tensor(cores{2}),[1,2]);
+% TT{3} = unfold(tensor(cores{3}),[1,2]);
+% TT{4} = unfold(tensor(cores{4}),[1,2]);
+% TT{5} = unfold(tensor(cores{5}),[1,2]);
+% TT{6} = unfold(tensor(cores{6}),[1,2]);
+% TT{7} = unfold(tensor(cores{7}),[1,2]);
+% norm_TT = TTnorm(TT);
+
+% 
+% % %%% N_2 molecule
 % d = 16;
 % file_name = "n2_tol1e15.mat";
 % load(file_name);
@@ -87,9 +83,18 @@ norm_TT = TTnorm(TT);
 % TT{9} = unfold(tensor(cores{9}),[1,2]);
 % TT{10} = unfold(tensor(cores{10}),[1,2]); 
 % norm_TT = TTnorm(TT);
+% 
+%% Thermal Radiation Transport
+% load("data1_99992.mat")
+% TT = cell(N,1);
+% TT{1} = core{1};
+% TT{2} = reshape(core{2},[],size(core{2},3));
+% TT{3} = reshape(core{3},[],1);
+% [~,I,R] = TTsizes(TT);
+% norm_TT = TTnorm(TT);
 
-
-
+% 
+profile on
 for i=1:1
     for s=1:S
         start = tic;
@@ -100,21 +105,20 @@ for i=1:1
     
     for s=1:S
         start = tic;
-        Y_RandLR = TTrounding_Orthogonalize_then_Randomize_Adaptive(TT, tol);
+        Y_RandLR = TTrounding_Orthogonalize_then_Randomize_Adaptive(TT, tol, 10);
         timeRandLR(i,s) = toc(start);
         errorsRandLR(i,s) = TTnorm(TTaxby(1,TT,-1,Y_RandLR), "OLR") / norm_TT;
     end
     
     for s=1:S
         start = tic;
-        % Y_RandKtr =  TTrounding_KTR_Adaptive_Exact(TT, tol);
-        Y_RandKtr =  TTrounding_KTR_Adaptive_Est(TT,norm_TT, tol);
+        Y_RandKtr =  TTroundingKRP_Adaptive(TT, tol, 10);
         timeRandKtr(i,s) = toc(start);
         errorsRandKtr(i,s) = TTnorm(TTaxby(1,TT,-1,Y_RandKtr), "OLR") / norm_TT;
     end
         
 end
-
+profile off
     
 
 mean_errLR = mean(errorsLR,2);
