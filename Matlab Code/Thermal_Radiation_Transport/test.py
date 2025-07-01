@@ -30,11 +30,11 @@ def print_info(data_dict):
 
 data1_dict = create_dict(data1)
 data2_dict = create_dict(data2)
-for k in timesteps:
-    name = 'data1_'+str(int(k))+'.mat'
-    scipy.io.savemat(name,{'core': data1_dict[k],'N':3})
-    name = 'data2_'+str(int(k))+'.mat'
-    scipy.io.savemat(name,{'core': data2_dict[k],'N':3})
+# for k in timesteps:
+#     name = 'data1_'+str(int(k))+'.mat'
+#     scipy.io.savemat(name,{'core': data1_dict[k],'N':3})
+#     name = 'data2_'+str(int(k))+'.mat'
+#     scipy.io.savemat(name,{'core': data2_dict[k],'N':3})
 
 
 # Uncomment to print the shape of TT-cores at each timestep
@@ -46,8 +46,8 @@ print()
 print("TT before rounding after source term solver update:")
 print_info(data2_dict)
 
-# Uncomment to save the dictionaries to pickle files
-with open("data1_dict.pkl", "wb") as f:
-    pkl.dump(data1_dict, f)
-with open("data2_dict.pkl", "wb") as f:
-    pkl.dump(data2_dict, f)
+# # Uncomment to save the dictionaries to pickle files
+# with open("data1_dict.pkl", "wb") as f:
+#     pkl.dump(data1_dict, f)
+# with open("data2_dict.pkl", "wb") as f:
+#     pkl.dump(data2_dict, f)

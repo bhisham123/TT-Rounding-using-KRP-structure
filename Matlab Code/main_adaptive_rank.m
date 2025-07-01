@@ -11,7 +11,7 @@ addpath("./Thermal_Radiation_Transport/")
 %% Run and time experiments
 S = 1; %number of runs
 
-tol = 1e-3;
+tol = 1e-5;
 
 
 errorsLR = zeros(1,S);
@@ -26,25 +26,25 @@ timeRandKtr = zeros(1,S);
 
 
 % % % Matern data
-d = 100;
-file_name = "matern_data.mat";
-load(file_name)
-
-actual_rank = double(ranks);
-I = double(d)*ones(N,1);
-
-TT = cell(N,1);
-TT{1} = unfold(tensor(cores.core1),[1,2]);
-TT{2} = unfold(tensor(cores.core2),[1,2]);
-TT{3} = unfold(tensor(cores.core3),[1,2]);
-TT{4} = unfold(tensor(cores.core4),[1,2]);
-TT{5} = unfold(tensor(cores.core5),[1,2]);
-TT{6} = unfold(tensor(cores.core6),[1,2]);
-TT{7} = unfold(tensor(cores.core7),[1,2]);
-TT{8} = unfold(tensor(cores.core8),[1,2]);
-norm_TT = TTnorm(TT);
-
-
+% d = 100;
+% file_name = "matern_data.mat";
+% load(file_name)
+% 
+% actual_rank = double(ranks);
+% I = double(d)*ones(N,1);
+% 
+% TT = cell(N,1);
+% TT{1} = unfold(tensor(cores.core1),[1,2]);
+% TT{2} = unfold(tensor(cores.core2),[1,2]);
+% TT{3} = unfold(tensor(cores.core3),[1,2]);
+% TT{4} = unfold(tensor(cores.core4),[1,2]);
+% TT{5} = unfold(tensor(cores.core5),[1,2]);
+% TT{6} = unfold(tensor(cores.core6),[1,2]);
+% TT{7} = unfold(tensor(cores.core7),[1,2]);
+% TT{8} = unfold(tensor(cores.core8),[1,2]);
+% norm_TT = TTnorm(TT);
+% 
+% 
 %%% H2O
 % d = 16;
 % file_name = "h2o_stog3_tol1e16.mat";
@@ -85,13 +85,13 @@ norm_TT = TTnorm(TT);
 % norm_TT = TTnorm(TT);
 % 
 %% Thermal Radiation Transport
-% load("data1_99992.mat")
-% TT = cell(N,1);
-% TT{1} = core{1};
-% TT{2} = reshape(core{2},[],size(core{2},3));
-% TT{3} = reshape(core{3},[],1);
-% [~,I,R] = TTsizes(TT);
-% norm_TT = TTnorm(TT);
+load("data1_99992.mat")
+TT = cell(N,1);
+TT{1} = core{1};
+TT{2} = reshape(core{2},[],size(core{2},3));
+TT{3} = reshape(core{3},[],1);
+[~,I,R] = TTsizes(TT);
+norm_TT = TTnorm(TT);
 
 % 
 profile on

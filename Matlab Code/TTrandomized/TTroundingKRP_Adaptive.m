@@ -37,7 +37,7 @@ if nargin < 4 || isempty(incr_f)
     incr_f = 20;
 end
 if nargin < 3 || isempty(init_f)
-    init_f = 5;
+    init_f = 10;
 end
 
 [N,I,r] = TTsizes(Y);

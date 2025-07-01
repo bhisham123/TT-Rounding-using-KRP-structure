@@ -9,8 +9,9 @@ close("all")
 addpath("./TTcore/");
 addpath("./TTrandomized/");
 addpath("./Data/");
-addpath("./Cookies/");
+addpath("./cookies/");
 addpath("./Gram/")
+addpath("./Data/nine_cookies/")
 
 
 %% Global parameters
@@ -19,22 +20,39 @@ addpath("./Gram/")
 S = 3;
 
 % Number of parameters ranges from 2^2 to 2^l
-l = 6; %8; 
-N = 2.^(3:l);
-
+l = 2; %8; 
+N = 2.^(2:l);
+gram = false;
+no_cookies = 4;
 
 %% Load FEM matrices
-gram = false;
-A0 = readcoomat('A0.txt');
-A1 = readcoomat('A1.txt');
-A2 = readcoomat('A2.txt');
-A3 = readcoomat('A3.txt');
-A4 = readcoomat('A4.txt');
+if no_cookies == 4
+    A0 = readcoomat('A0.txt');
+    A1 = readcoomat('A1.txt');
+    A2 = readcoomat('A2.txt');
+    A3 = readcoomat('A3.txt');
+    A4 = readcoomat('A4.txt');
+
+    a0 = readb('b.txt');
+elseif no_cookies == 9
+    A0 = matrix_1();
+    A1 = matrix_2();
+    A2 = matrix_3();
+    A3 = matrix_4();
+    A4 = matrix_5();
+    A5 = matrix_6();
+    A6 = matrix_7();
+    A7 = matrix_8();
+    A8 = matrix_9();
+    A9 = matrix_10();
+
+    a0 = ones(length(A0),1);
+end
 
 n1 = length(A0);
 A = speye(n1);
 
-a0 = readb('b.txt');
+
 
 %% Run and time experiments
 
@@ -86,19 +104,40 @@ for i = 1:length(N)
 
     c = ones(n,1);
     B = speye(n);
+    if no_cookies == 4
+        b = {a0;c;c;c;c};
+        
 
-    b = {a0;c;c;c;c};
+        A = {A0, A1, A2, A3, A4;
+             B,  D,  B,  B,  B;
+             B,  B,  D,  B,  B;
+             B,  B,  B,  D,  B;
+             B,  B,  B,  B,  D};
 
-    A = {A0, A1, A2, A3, A4;
-         B,  D,  B,  B,  B;
-         B,  B,  D,  B,  B;
-         B,  B,  B,  D,  B;
-         B,  B,  B,  B,  D};
+    elseif no_cookies == 9
+        b = {a0;c;c;c;c;c;c;c;c;c};
+
+        A = {A0, A1, A2, A3, A4, A5, A6, A7, A8, A9;
+             B,  D,  B,  B,  B,  B,  B,  B,  B,  B;
+             B,  B,  D,  B,  B,  B,  B,  B,  B,  B;
+             B,  B,  B,  D,  B,  B,  B,  B,  B,  B;
+             B,  B,  B,  B,  D,  B,  B,  B,  B,  B;
+             B,  B,  B,  B,  B,  D,  B,  B,  B,  B;
+             B,  B,  B,  B,  B,  B,  D,  B,  B,  B;
+             B,  B,  B,  B,  B,  B,  B,  D,  B,  B;
+             B,  B,  B,  B,  B,  B,  B,  B,  D,  B;
+             B,  B,  B,  B,  B,  B,  B,  B,  B,  D};
+    end
+
 
     % TT-GMRES parameter setup
     tol      = 1e-8;
     maxit    = 50;
-    [L,U,p]  = lu(A0 + 1*(A1 + A2 + A3 + A4), 'vector');
+    if no_cookies == 4
+        [L,U,p]  = lu(A0 + 1*(A1 + A2 + A3 + A4), 'vector');
+    elseif no_cookies == 9
+        [L,U,p]  = lu(A0 + 1*(A1 + A2 + A3 + A4 + A5 + A6 + A7 + A8 + A9), 'vector');
+    end
     prec     = @(x) Preconditioner(L,U,p,x);
     tols     = tol*1e-2;
     normb    = TTnorm(b);
@@ -106,7 +145,7 @@ for i = 1:length(N)
     normb    = TTnorm(b);
 
     Op            = @(x)       TTsummandsKronOp(A, x);
-    
+
     deterministic = @(W,a,tol) TTsum(W, a, tol);
     deterministic_gram = @(W,a,tol) TTsum_Gram(W, a, tol);
     randomized    = @(W,a,tol) TTsum_Randomize_then_Orthogonalize(W, a, tol);
@@ -128,7 +167,7 @@ for i = 1:length(N)
             r = TTaxby(1., r, -1., b);
             fprintf("*********\nnorm real res = %e\t", TTnorm(r, "OLR")/normb);
             fprintf("rounding and sum time = %.2f\n*********\n", sumtime);
-    
+
             for j = 1 : size(ranksN,1)
                 ranksGram{i}(j,s) = max(ranksN{j}); 
             end
@@ -139,7 +178,7 @@ for i = 1:length(N)
             runtimeGramGMRES(i,s)  = tEnd;
         end
 
-    
+
         fprintf("*********\nRandomized TT-GMRES run - n2 = %i\t", n);
         tStart = tic;
         [x, ranksR, sumtime, optime, prectime, remtime] = timed_TTGMRES(Op, b, tol, maxit, prec, tols, randomized);
@@ -187,7 +226,7 @@ for i = 1:length(N)
         remTimeRandKRPGMRES(i,s)   = remtime;
         runtimeRandKRPGMRES(i,s)   = tEnd;
 
-        
+
         fprintf("*********\nDeterministic TT-GMRES run - n2 = %i\t", n);
         tStart = tic;
         [x, ranksN, sumtime, optime, prectime, remtime] = timed_TTGMRES(Op, b, tol, maxit, prec, tols, deterministic);
@@ -201,7 +240,7 @@ for i = 1:length(N)
         r = TTaxby(1., r, -1., b);
         fprintf("*********\nnorm real res = %e\t", TTnorm(r, "OLR")/normb);
         fprintf("rounding and sum time = %.2f\n*********\n", sumtime);
-        
+
         for j = 1 : size(ranksN,1)
             ranksnormal{i}(j,s) = max(ranksN{j});
         end
@@ -245,6 +284,7 @@ runtimeRandKRPGMRES = runtimeRandKRPGMRES(:,2:end);
 
 close("all")
 
+% load("test_case_without_gram_svd.mat")
 f = figure(1);
 f.Position(1:2) = [0, 0];
 f.Position(3:4) = [1350, 350];
@@ -317,12 +357,12 @@ end
 speedup = median(runtimeNormalGMRES, 2) ./ median(runtimeRandGMRES, 2);
 neg = speedup - min(runtimeNormalGMRES,[],2)./ max(runtimeRandGMRES,[],2);
 pos = max(runtimeNormalGMRES,[],2)./ min(runtimeRandGMRES,[],2) - speedup;
-errorbar(N, speedup, neg, pos,'r-s','markersize',10,'linewidth',2);
+errorbar(N, speedup, neg, pos,'-s','Color','#7E2F8E','markersize',10,'linewidth',2);
 hold on;
 speedup = median(sumTimeNormalGMRES, 2) ./ median(sumTimeRandGMRES, 2);
 neg = speedup - min(sumTimeNormalGMRES,[],2)./ max(sumTimeRandGMRES,[],2);
 pos = max(sumTimeNormalGMRES,[],2)./ min(sumTimeRandGMRES,[],2) - speedup;
-errorbar(N, speedup, neg, pos,'b-o','markersize',10,'linewidth',2);
+errorbar(N, speedup, neg, pos,'-o','Color','#008000','markersize',10,'linewidth',2);
 
 if gram
     % %Randomized with KRP Structure
@@ -340,17 +380,17 @@ end
 speedup_krp = median(runtimeNormalGMRES, 2) ./ median(runtimeRandKRPGMRES, 2);
 neg_krp = speedup_krp - min(runtimeNormalGMRES,[],2)./ max(runtimeRandKRPGMRES,[],2);
 pos_krp = max(runtimeNormalGMRES,[],2)./ min(runtimeRandKRPGMRES,[],2) - speedup_krp;
-errorbar(N, speedup_krp, neg_krp, pos_krp,'m-s','markersize',10,'linewidth',2);
+errorbar(N, speedup_krp, neg_krp, pos_krp,'r-s','markersize',10,'linewidth',2);
 speedup_krp = median(sumTimeNormalGMRES, 2) ./ median(sumTimeRandKRPGMRES, 2);
 neg_krp = speedup_krp - min(sumTimeNormalGMRES,[],2)./ max(sumTimeRandKRPGMRES,[],2);
 pos_krp = max(sumTimeNormalGMRES,[],2)./ min(sumTimeRandKRPGMRES,[],2) - speedup_krp;
-errorbar(N, speedup_krp, neg_krp, pos_krp,'g-o','markersize',10,'linewidth',2);
+errorbar(N, speedup_krp, neg_krp, pos_krp,'b-o','markersize',10,'linewidth',2);
 hold off;
 
 if gram
     legend('Total speedup-Gram', 'TT-Sum + Round-Gram','Total speedup', 'TT-Sum + Round','Total speedup--KRP','TT-Sum + Round--KRP', 'Total speedup-KRP','TT-Sum + Round-KRP', 'location', 'northwest')
 else
-    legend('Total speedup', 'TT-Sum + Round','Total speedup--KRP','TT-Sum + Round--KRP', 'location', 'northwest')
+    legend('Total speedup-TTlike', 'TT-Sum+Round-TTlike','Total speedup-KRP','TT-Sum+Round-KRP', 'location', 'southeast')
 end
 
 set(gca, 'XScale', 'log')
@@ -360,28 +400,36 @@ xticks(N);
 set(gca,'FontSize',16)
 grid on
 
-% if gram
-%     exportgraphics(f, 'TTGMRES_Speedup_with_Gram.png')
-% else
-%     exportgraphics(f, 'TTGMRES_Speedup.png')
-% end
+if gram
+    exportgraphics(f, 'TTGMRES_Speedup_with_Gram.png')
+else
+    exportgraphics(f, 'TTGMRES_Speedup.png')
+    exportgraphics(f, 'TTGMRES_Speedup.pdf')
+end
 
 f = figure(3);
 clf();
 f.Position(1:2) = [525,525];
 f.Position(3:4) = [525, 355];
 ranks = max(ranksrand{1}(1:end-1,:),[],2);
+
+ranks = max(ranksrandkrp{1}(1:end-1,:),[],2);
+p3 = plot(ranks, 'r*','markersize',10,'linewidth',2); hold on
+
 p1 = plot(ranks, 'bo','markersize',10,'linewidth',2);
 hold on
 ranks = max(ranksnormal{1}(1:end-1,:),[],2);
-p2 = plot(ranks, 'r+','markersize',10,'linewidth',2);
+p2 = plot(ranks, 'k+','markersize',10,'linewidth',2);
 
-ranks = max(ranksrandkrp{1}(1:end-1,:),[],2);
-p3 = plot(ranks, 'ks','markersize',10,'linewidth',2);
 
 if gram
     ranks = max(ranksGram{1}(1:end-1,:),[],2);
     p4 = plot(ranks, 'm*','markersize',10,'linewidth',2);
+end
+
+for j=2:length(N)
+    ranks = max(ranksrandkrp{j}(1:end-1,:),[],2);
+    plot(ranks, 'r*', 'markersize',10,'linewidth',2)
 end
 
 for j=2:length(N)
@@ -390,7 +438,7 @@ for j=2:length(N)
 end
 for j=2:length(N)
     ranks = max(ranksnormal{j}(1:end-1,:),[],2);
-    plot(ranks, 'r+', 'markersize',10,'linewidth',2)
+    plot(ranks, 'k+', 'markersize',10,'linewidth',2)
 end
 
 if gram
@@ -400,25 +448,25 @@ if gram
     end
 end
 
-for j=2:length(N)
-    ranks = max(ranksrandkrp{j}(1:end-1,:),[],2);
-    plot(ranks, 'ks', 'markersize',10,'linewidth',2)
-end
+
 hold off
 if gram
-    legend([p2,p4,p1,p3], 'Naive TT-GMRES', 'Gram TT-GMRES','Randomized TT-GMRES','Randomized TT-GMRES-KRP' , 'location', 'southeast')
+    legend([p2,p4,p1,p3], 'Naive TT-GMRES', 'Gram TT-GMRES','Randomized TT-GMRES-TTlike','Randomized TT-GMRES-KRP' , 'location', 'southeast')
 else
-    legend([p2,p1,p3], 'Naive TT-GMRES', 'Randomized TT-GMRES','Randomized TT-GMRES-KRP' , 'location', 'southeast')
+    legend([p3,p1,p2], 'Randomized TT-GMRES-KRP' , 'Randomized TT-GMRES-TTlike','Naive TT-GMRES', 'location', 'southeast')
+
+    % legend([p2,p1,p3], 'Naive TT-GMRES', 'Randomized TT-GMRES-TTlike','Randomized TT-GMRES-KRP' , 'location', 'southeast')
 end
 xlabel('TT-GMRES iteration number', 'FontSize', 18)
 ylabel('TT-rank', 'FontSize', 18)
 set(gca,'FontSize',16)
 
-% if gram
-%     exportgraphics(f, 'TTGMRES_Ranks_with_Gram.png')
-% else
-%     exportgraphics(f, 'TTGMRES_Ranks.png')
-% end
+if gram
+    exportgraphics(f, 'TTGMRES_Ranks_with_Gram.png')
+else
+    exportgraphics(f, 'TTGMRES_Ranks.png')
+    exportgraphics(f, 'TTGMRES_Ranks.pdf')
+end
 
 beep;
 pause(1)

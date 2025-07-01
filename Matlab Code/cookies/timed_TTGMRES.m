@@ -1,4 +1,6 @@
 function [x, ranks, time_RoundSum, time_Operator, time_Prec, time_Other] = timed_TTGMRES(A, b, tol, maxit, prec, tols, rounding_sum)
+filename = [func2str(rounding_sum) '.txt'];
+fileID = fopen(filename, 'a');
 
 time_RoundSum = 0;
 time_Operator = 0;
@@ -28,9 +30,14 @@ tStart = tic;
     ranks{1} = TTranks(V{1});
 time_Other =  time_Other + toc(tStart);
 
+[~,I,~] = TTsizes(b);
+fprintf(fileID, 'Mode dimns:');
+fprintf(fileID, ' %2d', I);
+fprintf(fileID, '\n');
 
+time_k = 0
 while(k < maxit && normres > tol * normb)
-    % k
+    k
     tStart = tic;
         k = k + 1;
         w = prec(V{k});
@@ -60,8 +67,8 @@ while(k < maxit && normres > tol * normb)
     tStart = tic;
         V{k+1} = w;
         w = rounding_sum(V(1:k+1), [-h(1:k);1], delta);
-        % for i = 1:length(w)-1
-        %     error_orth = norm(w{i}'*w{i}-eye(size(w{i},2)), 'fro');
+        % for i = length(w):-1:2
+        %     error_orth = norm(w{i}*w{i}'-eye(size(w{i},2)), 'fro');
         %     if error_orth > 1e-7
         %         disp(['k = ',num2str(k), ', i = ', num2str(i),', error = ',num2str(error_orth)])
         %     end
@@ -83,6 +90,11 @@ while(k < maxit && normres > tol * normb)
         
         t = Q' * rK(1 : k + 1);
     time_Other = time_Other + toc(tStart);
+    fprintf(fileID, 'Iter: %d\tRanks:', k);
+    fprintf(fileID, ' %5d', TTranks(w));
+    fprintf(fileID, '\tError: %.10f', normres);
+    fprintf(fileID, '\tTime: %.5f\n', (time_Prec+time_Operator+time_RoundSum+time_Other)-time_k);
+    time_k = time_Prec+time_Operator+time_RoundSum+time_Other;
 end
 
 tStart = tic;

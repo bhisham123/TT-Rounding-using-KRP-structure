@@ -30,7 +30,7 @@ if nargin < 5 || isempty(use_svd_filtering)
     use_svd_filtering = false;
 end
 if nargin < 4 || isempty(incr_f)
-    incr_f = 20;
+    incr_f = 0.05;
 end
 if (nargin == 2)
     tol = 1e-10;
@@ -70,8 +70,8 @@ end
 % Left-to-right randomization and orthogonalization
 for n = 1:N-1
     current_core = X{n}; %current core of the TT-sum
-    [~,cols] = size(current_core);
-
+    [rows,cols] = size(current_core);
+    cols = min(rows,cols);
     Init_b =  max(max_mod_rank(n+1),2); %initial block size
     orthogonal_cols = 0;
 
@@ -118,7 +118,8 @@ for n = 1:N-1
 
     orthogonal_cols = orthogonal_cols + Init_b; %update the orthogonal columns count    
 
-    b = max(2,floor(cols/incr_f)); %block size for increment
+    b = max(2,floor(cols*incr_f)); %block size for increment
+    % b = min(50,max(2,floor(cols*incr_f))); %block size for increment
 
     %compute partial sketches
     if size(W{n},2) < orthogonal_cols+b
@@ -135,6 +136,12 @@ for n = 1:N-1
     Yn = current_core*W{n}(:,orthogonal_cols+1:orthogonal_cols+b); %compute sketch
     Yn = Yn - X{n}*(X{n}'*Yn); % Remove the directions already computed (orthogonalization)
 
+    if  norm(X{n}'*X{n}-eye(size(X{n},2)), 'fro') > 10^-8
+        disp('Orthonormality Error')
+
+    end
+
+
     while (norm(Yn,'fro')/sqrt(b) > tau) 
         b = min(b,cols - orthogonal_cols); 
         if b <= 0
@@ -146,20 +153,25 @@ for n = 1:N-1
 
         [Q, R] = qr(Yn, 0); %tall and skinny QR
         [Q, R1] = qr(Q-X{n}*(X{n}'*Q), 0);
+        % [Q, ~] = qr(Q-X{n}*(X{n}'*Q), 0);
 
-        if use_svd_filtering
-            R = R1*R;
-            [U1,s,~] = svd(R);
-            s = diag(s);
-            indices = s > svd_thresh*s(1);
-            if ~any(indices)
-                break; % No new info to add
-            end 
-            Q = Q*U1(:, indices);
-            b = sum(indices);
-        end
+        % if use_svd_filtering
+        %     R = R1*R;
+        %     [U1,s,~] = svd(R);
+        %     s = diag(s);
+        %     indices = s > svd_thresh*s(1);
+        %     if ~any(indices)
+        %         break; % No new info to add
+        %     end 
+        %     Q = Q*U1(:, indices);
+        %     b = sum(indices);
+        % end
 
         X{n} = [X{n},Q];  % Add new directions
+
+        if  norm(X{n}'*X{n}-eye(size(X{n},2)), 'fro') > 10^-8
+            disp('Orthonormality Error')
+        end
 
         %Pass remaining factor to the core on right
         Mn =  Q'*current_core;
