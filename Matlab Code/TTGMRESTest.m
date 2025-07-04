@@ -11,7 +11,7 @@ addpath("./TTrandomized/");
 addpath("./Data/");
 addpath("./cookies/");
 addpath("./Gram/")
-addpath("./Data/nine_cookies/")
+addpath("./Data/nine_cookies/nx_40")
 
 
 %% Global parameters
@@ -20,37 +20,31 @@ addpath("./Data/nine_cookies/")
 S = 3;
 
 % Number of parameters ranges from 2^2 to 2^l
-l = 2; %8; 
-N = 2.^(2:l);
+l = 6; %8; 
+N = 2.^(l:l);
 gram = false;
-no_cookies = 4;
+% select a number of the nine cookies
+list_cookies=[1,2,3,4,5,6,7,8,9];
 
 %% Load FEM matrices
-if no_cookies == 4
-    A0 = readcoomat('A0.txt');
-    A1 = readcoomat('A1.txt');
-    A2 = readcoomat('A2.txt');
-    A3 = readcoomat('A3.txt');
-    A4 = readcoomat('A4.txt');
 
-    a0 = readb('b.txt');
-elseif no_cookies == 9
-    A0 = matrix_1();
-    A1 = matrix_2();
-    A2 = matrix_3();
-    A3 = matrix_4();
-    A4 = matrix_5();
-    A5 = matrix_6();
-    A6 = matrix_7();
-    A7 = matrix_8();
-    A8 = matrix_9();
-    A9 = matrix_10();
-
-    a0 = ones(length(A0),1);
-end
+matrix_1;
+matrix_2;
+matrix_3;
+matrix_4;
+matrix_5;
+matrix_6;
+matrix_7;
+matrix_8;
+matrix_9;
+matrix_10;
+rhs_;
+a0 = rhs;
+clear rhs;
+A0 = A{1};
 
 n1 = length(A0);
-A = speye(n1);
+% A = speye(n1);
 
 
 
@@ -104,40 +98,39 @@ for i = 1:length(N)
 
     c = ones(n,1);
     B = speye(n);
-    if no_cookies == 4
-        b = {a0;c;c;c;c};
-        
-
-        A = {A0, A1, A2, A3, A4;
-             B,  D,  B,  B,  B;
-             B,  B,  D,  B,  B;
-             B,  B,  B,  D,  B;
-             B,  B,  B,  B,  D};
-
-    elseif no_cookies == 9
-        b = {a0;c;c;c;c;c;c;c;c;c};
-
-        A = {A0, A1, A2, A3, A4, A5, A6, A7, A8, A9;
-             B,  D,  B,  B,  B,  B,  B,  B,  B,  B;
-             B,  B,  D,  B,  B,  B,  B,  B,  B,  B;
-             B,  B,  B,  D,  B,  B,  B,  B,  B,  B;
-             B,  B,  B,  B,  D,  B,  B,  B,  B,  B;
-             B,  B,  B,  B,  B,  D,  B,  B,  B,  B;
-             B,  B,  B,  B,  B,  B,  D,  B,  B,  B;
-             B,  B,  B,  B,  B,  B,  B,  D,  B,  B;
-             B,  B,  B,  B,  B,  B,  B,  B,  D,  B;
-             B,  B,  B,  B,  B,  B,  B,  B,  B,  D};
+    b = cell(length(list_cookies)+1,1);
+    b{1} = a0;
+    for j = 1 : length(list_cookies)
+        b{j+1} = c;
     end
-
+    C = cell(length(list_cookies)+1,length(list_cookies)+1);
+    for p = 1 : length(list_cookies) + 1
+        for q = 1 : length(list_cookies) + 1
+            if p == 1
+                C{1,q} = A{p};
+            else
+                if p == q
+                    C{p,q} = D;
+                else
+                    C{p,q} = B;
+                end
+            end
+        end
+    end
+    A = C;
+    clear C;
+    
 
     % TT-GMRES parameter setup
     tol      = 1e-8;
     maxit    = 50;
-    if no_cookies == 4
-        [L,U,p]  = lu(A0 + 1*(A1 + A2 + A3 + A4), 'vector');
-    elseif no_cookies == 9
-        [L,U,p]  = lu(A0 + 1*(A1 + A2 + A3 + A4 + A5 + A6 + A7 + A8 + A9), 'vector');
+
+    mat = A{1,1};
+    for j = 1 : length(list_cookies)
+        mat = mat + A{1,i+1};
     end
+    [L,U,p]  = lu(mat, 'vector');
+    clear mat;
     prec     = @(x) Preconditioner(L,U,p,x);
     tols     = tol*1e-2;
     normb    = TTnorm(b);
