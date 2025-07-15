@@ -1,124 +1,17 @@
-Mode dimns: 1681 4 4 4 4 4 4 4 4 4
-Iter: 1	Ranks:     1     9     9     8     7     6     5     4     3     2     1	Error: 0.9989392174	Time: 0.04580
-Iter: 2	Ranks:     1    37    37    34    28    21    15    10     6     3     1	Error: 0.9889955274	Time: 0.02609
-Iter: 3	Ranks:     1   121   121   112    89    56    35    20    10     4     1	Error: 0.8932206456	Time: 0.10137
-Iter: 4	Ranks:     1   325   373   346   254   121    66    32    13     4     1	Error: 0.5604962409	Time: 1.27051
-Iter: 5	Ranks:     1   330  1118  1048   599   222   106    44    15     4     1	Error: 0.2464164801	Time: 18.40459
-Iter: 6	Ranks:     1   330  1311  2759  1197   357   150    54    16     4     1	Error: 0.0928850448	Time: 229.91867
-Mode dimns: 1681  4  4  4  4
-Iter: 1	Ranks:     1     4     4     3     2     1	Error: 0.9983987591	Time: 0.17440
-Iter: 2	Ranks:     1    14    10     6     3     1	Error: 0.9845675521	Time: 0.03978
-Iter: 3	Ranks:     1    34    20    10     4     1	Error: 0.8594584329	Time: 0.06896
-Iter: 4	Ranks:     1    65    32    13     4     1	Error: 0.4933973726	Time: 0.08741
-Iter: 5	Ranks:     1   105    44    15     4     1	Error: 0.2006278411	Time: 0.12901
-Iter: 6	Ranks:     1   138    54    16     4     1	Error: 0.0715440606	Time: 0.17861
-Iter: 7	Ranks:     1   139    60    16     4     1	Error: 0.0232400451	Time: 0.22481
-Iter: 8	Ranks:     1   139    63    16     4     1	Error: 0.0087603404	Time: 0.27954
-Iter: 9	Ranks:     1   139    64    16     4     1	Error: 0.0033837100	Time: 0.23983
-Iter: 10	Ranks:     1   139    64    16     4     1	Error: 0.0012921786	Time: 0.27399
-Iter: 11	Ranks:     1   139    64    16     4     1	Error: 0.0004701036	Time: 0.24402
-Iter: 12	Ranks:     1   139    64    16     4     1	Error: 0.0001713876	Time: 0.28037
-Iter: 13	Ranks:     1   138    64    16     4     1	Error: 0.0000765767	Time: 0.29021
-Iter: 14	Ranks:     1   139    64    16     4     1	Error: 0.0000342635	Time: 0.29316
-Iter: 15	Ranks:     1   138    64    16     4     1	Error: 0.0000132461	Time: 0.34120
-Iter: 16	Ranks:     1   137    64    16     4     1	Error: 0.0000047810	Time: 0.32444
-Iter: 17	Ranks:     1   136    64    16     4     1	Error: 0.0000014961	Time: 0.34198
-Iter: 18	Ranks:     1   133    64    16     4     1	Error: 0.0000004973	Time: 0.37779
-Iter: 19	Ranks:     1   130    64    16     4     1	Error: 0.0000001724	Time: 0.35843
-Iter: 20	Ranks:     1   124    63    16     4     1	Error: 0.0000000652	Time: 0.35570
-Iter: 21	Ranks:     1   118    61    16     4     1	Error: 0.0000000258	Time: 0.35697
-Iter: 22	Ranks:     1   114    60    16     4     1	Error: 0.0000000086	Time: 0.39521
-Mode dimns: 1681  4  4  4  4
-Iter: 1	Ranks:     1     4     4     3     2     1	Error: 0.9983987591	Time: 0.01351
-Iter: 2	Ranks:     1    14    10     6     3     1	Error: 0.9845661014	Time: 0.01028
-Iter: 3	Ranks:     1    34    20    10     4     1	Error: 0.8594096234	Time: 0.02008
-Iter: 4	Ranks:     1    65    32    13     4     1	Error: 0.4932771093	Time: 0.04317
-Iter: 5	Ranks:     1   105    44    15     4     1	Error: 0.2004990074	Time: 0.06859
-Iter: 6	Ranks:     1   137    54    16     4     1	Error: 0.0714473532	Time: 0.12845
-Iter: 7	Ranks:     1   139    60    16     4     1	Error: 0.0231505098	Time: 0.17684
-Iter: 8	Ranks:     1   139    63    16     4     1	Error: 0.0086735504	Time: 0.20201
-Iter: 9	Ranks:     1   139    64    16     4     1	Error: 0.0033125299	Time: 0.24039
-Iter: 10	Ranks:     1   139    64    16     4     1	Error: 0.0012373909	Time: 0.25036
-Iter: 11	Ranks:     1   139    64    16     4     1	Error: 0.0004262540	Time: 0.28059
-Iter: 12	Ranks:     1   139    64    16     4     1	Error: 0.0001337926	Time: 0.25962
-Iter: 13	Ranks:     1   139    64    16     4     1	Error: 0.0000491023	Time: 0.26413
-Iter: 14	Ranks:     1   138    64    16     4     1	Error: 0.0000216066	Time: 0.29365
-Iter: 15	Ranks:     1   137    64    16     4     1	Error: 0.0000099941	Time: 0.30206
-Iter: 16	Ranks:     1   136    64    16     4     1	Error: 0.0000042323	Time: 0.32224
-Iter: 17	Ranks:     1   135    64    16     4     1	Error: 0.0000014333	Time: 0.31975
-Iter: 18	Ranks:     1   132    64    16     4     1	Error: 0.0000004882	Time: 0.35024
-Iter: 19	Ranks:     1   129    64    16     4     1	Error: 0.0000001707	Time: 0.33750
-Iter: 20	Ranks:     1   124    63    16     4     1	Error: 0.0000000648	Time: 0.34907
-Iter: 21	Ranks:     1   117    62    16     4     1	Error: 0.0000000257	Time: 0.36121
-Iter: 22	Ranks:     1   114    61    16     4     1	Error: 0.0000000086	Time: 0.34783
-Mode dimns: 1681  4  4  4  4
-Iter: 1	Ranks:     1     4     4     3     2     1	Error: 0.9983987591	Time: 0.00358
-Iter: 2	Ranks:     1    14    10     6     3     1	Error: 0.9845630914	Time: 0.00531
-Iter: 3	Ranks:     1    34    20    10     4     1	Error: 0.8594414407	Time: 0.01096
-Iter: 4	Ranks:     1    65    32    13     4     1	Error: 0.4932733162	Time: 0.02948
-Iter: 5	Ranks:     1   105    44    15     4     1	Error: 0.2005577860	Time: 0.06714
-Iter: 6	Ranks:     1   138    54    16     4     1	Error: 0.0715259949	Time: 0.12762
-Iter: 7	Ranks:     1   139    60    16     4     1	Error: 0.0232397926	Time: 0.20393
-Iter: 8	Ranks:     1   139    63    16     4     1	Error: 0.0087651462	Time: 0.23053
-Iter: 9	Ranks:     1   139    64    16     4     1	Error: 0.0033894367	Time: 0.23042
-Iter: 10	Ranks:     1   139    64    16     4     1	Error: 0.0012960893	Time: 0.23947
-Iter: 11	Ranks:     1   139    64    16     4     1	Error: 0.0004735824	Time: 0.27940
-Iter: 12	Ranks:     1   139    64    16     4     1	Error: 0.0001738732	Time: 0.28843
-Iter: 13	Ranks:     1   138    64    16     4     1	Error: 0.0000780119	Time: 0.26057
-Iter: 14	Ranks:     1   138    64    16     4     1	Error: 0.0000347409	Time: 0.27650
-Iter: 15	Ranks:     1   138    64    16     4     1	Error: 0.0000133166	Time: 0.30886
-Iter: 16	Ranks:     1   137    64    16     4     1	Error: 0.0000047898	Time: 0.33080
-Iter: 17	Ranks:     1   135    64    16     4     1	Error: 0.0000014970	Time: 0.34455
-Iter: 18	Ranks:     1   133    64    16     4     1	Error: 0.0000004974	Time: 0.39860
-Iter: 19	Ranks:     1   129    64    16     4     1	Error: 0.0000001724	Time: 0.38720
-Iter: 20	Ranks:     1   124    63    16     4     1	Error: 0.0000000652	Time: 0.33605
-Iter: 21	Ranks:     1   117    61    16     4     1	Error: 0.0000000258	Time: 0.36130
-Iter: 22	Ranks:     1   114    60    16     4     1	Error: 0.0000000086	Time: 0.40276
-Mode dimns: 1825  4  4  4  4
-Iter: 1	Ranks:     1     5     4     3     2     1	Error: 0.9812501753	Time: 0.09351
-Iter: 2	Ranks:     1    15    10     6     3     1	Error: 0.7153616279	Time: 0.02128
-Iter: 3	Ranks:     1    35    20    10     4     1	Error: 0.3296151532	Time: 0.05325
-Iter: 4	Ranks:     1    66    32    13     4     1	Error: 0.0876849215	Time: 0.07087
-Iter: 5	Ranks:     1    97    44    15     4     1	Error: 0.0156334391	Time: 0.08729
-Iter: 6	Ranks:     1   112    54    16     4     1	Error: 0.0023934395	Time: 0.11766
-Iter: 7	Ranks:     1   114    60    16     4     1	Error: 0.0004941549	Time: 0.19252
-Iter: 8	Ranks:     1   114    63    16     4     1	Error: 0.0001240024	Time: 0.21056
-Iter: 9	Ranks:     1   115    64    16     4     1	Error: 0.0000202689	Time: 0.19559
-Iter: 10	Ranks:     1   114    64    16     4     1	Error: 0.0000041934	Time: 0.21103
-Iter: 11	Ranks:     1   105    63    16     4     1	Error: 0.0000014947	Time: 0.20850
-Iter: 12	Ranks:     1   104    63    16     4     1	Error: 0.0000006010	Time: 0.20604
-Iter: 13	Ranks:     1    99    62    16     4     1	Error: 0.0000002260	Time: 0.21189
-Iter: 14	Ranks:     1    99    62    16     4     1	Error: 0.0000000479	Time: 0.20954
-Iter: 15	Ranks:     1   100    62    16     4     1	Error: 0.0000000058	Time: 0.20750
-Mode dimns: 1825  4  4  4  4
-Iter: 1	Ranks:     1     5     4     3     2     1	Error: 0.9812501753	Time: 0.00676
-Iter: 2	Ranks:     1    15    10     6     3     1	Error: 0.7153616279	Time: 0.00571
-Iter: 3	Ranks:     1    35    20    10     4     1	Error: 0.3296151532	Time: 0.01213
-Iter: 4	Ranks:     1    66    32    13     4     1	Error: 0.0876849215	Time: 0.03146
-Iter: 5	Ranks:     1    97    44    15     4     1	Error: 0.0156334391	Time: 0.06510
-Iter: 6	Ranks:     1   112    54    16     4     1	Error: 0.0023934395	Time: 0.11134
-Iter: 7	Ranks:     1   114    60    16     4     1	Error: 0.0004941549	Time: 0.14822
-Iter: 8	Ranks:     1   114    63    16     4     1	Error: 0.0001240024	Time: 0.16012
-Iter: 9	Ranks:     1   115    64    16     4     1	Error: 0.0000202689	Time: 0.17357
-Iter: 10	Ranks:     1   114    64    16     4     1	Error: 0.0000041934	Time: 0.19511
-Iter: 11	Ranks:     1   105    63    16     4     1	Error: 0.0000014947	Time: 0.19319
-Iter: 12	Ranks:     1   104    63    16     4     1	Error: 0.0000006010	Time: 0.18457
-Iter: 13	Ranks:     1    99    62    16     4     1	Error: 0.0000002260	Time: 0.19674
-Iter: 14	Ranks:     1    99    62    16     4     1	Error: 0.0000000479	Time: 0.25878
-Iter: 15	Ranks:     1   100    62    16     4     1	Error: 0.0000000058	Time: 0.23595
-Mode dimns: 1825  4  4  4  4
-Iter: 1	Ranks:     1     5     4     3     2     1	Error: 0.9812501753	Time: 0.00627
-Iter: 2	Ranks:     1    15    10     6     3     1	Error: 0.7153616279	Time: 0.00725
-Iter: 3	Ranks:     1    35    20    10     4     1	Error: 0.3296151532	Time: 0.01324
-Iter: 4	Ranks:     1    66    32    13     4     1	Error: 0.0876849215	Time: 0.03185
-Iter: 5	Ranks:     1    97    44    15     4     1	Error: 0.0156334391	Time: 0.06735
-Iter: 6	Ranks:     1   112    54    16     4     1	Error: 0.0023934395	Time: 0.11439
-Iter: 7	Ranks:     1   114    60    16     4     1	Error: 0.0004941549	Time: 0.14901
-Iter: 8	Ranks:     1   114    63    16     4     1	Error: 0.0001240024	Time: 0.16631
-Iter: 9	Ranks:     1   115    64    16     4     1	Error: 0.0000202689	Time: 0.21068
-Iter: 10	Ranks:     1   114    64    16     4     1	Error: 0.0000041934	Time: 0.18234
-Iter: 11	Ranks:     1   105    63    16     4     1	Error: 0.0000014947	Time: 0.21097
-Iter: 12	Ranks:     1   104    63    16     4     1	Error: 0.0000006010	Time: 0.20555
-Iter: 13	Ranks:     1    99    62    16     4     1	Error: 0.0000002260	Time: 0.20581
-Iter: 14	Ranks:     1    99    62    16     4     1	Error: 0.0000000479	Time: 0.24512
-Iter: 15	Ranks:     1   100    62    16     4     1	Error: 0.0000000058	Time: 0.23167
+Mode dimns: 1681  8  8  8  8  8  8
+Iter: 1	Ranks:     1     6     6     5     4     3     2     1	Error: 0.9978444899Mode dimns: 1681  8  8  8  8  8  8
+Iter: 1	Ranks:     1     6     6     5     4     3     2     1	Error: 0.9978444899	Time: 0.04486
+Iter: 2	Ranks:     1    25    21    15    10     6     3     1	Error: 0.9824831341	Time: 0.08075
+Iter: 3	Ranks:     1    82    56    35    20    10     4     1	Error: 0.8498861519	Time: 0.05200
+Iter: 4	Ranks:     1   160   126    70    35    15     5     1	Error: 0.5002729986	Time: 0.27415
+Iter: 5	Ranks:     1   169   252   126    56    21     6     1	Error: 0.2142846907	Time: 1.01593
+Iter: 6	Ranks:     1   169   456   210    84    28     7     1	Error: 0.0828612875	Time: 3.22233
+Iter: 7	Ranks:     1   169   571   330   120    36     8     1	Error: 0.0319958942	Time: 8.32726
+Iter: 8	Ranks:     1   169   660   481   162    43     8     1	Error: 0.0124517820	Time: 16.51870
+Iter: 9	Ranks:     1   169   736   615   208    49     8     1	Error: 0.0048653419	Time: 28.98017
+Iter: 10	Ranks:     1   169   793   720   251    54     8     1	Error: 0.0018711875	Time: 45.17932
+Iter: 11	Ranks:     1   169   829   787   281    58     8     1	Error: 0.0006650868	Time: 62.77669
+Iter: 12	Ranks:     1   169   846   825   298    61     8     1	Error: 0.0002487726	Time: 80.20473
+Iter: 13	Ranks:     1   169   842   831   306    62     8     1	Error: 0.0001082546	Time: 92.61399
+Iter: 14	Ranks:     1   169   845   842   312    64     8     1	Error: 0.0000407699	Time: 99.19197
+Iter: 15	Ranks:     1   169   832   826   312    64     8     1	Error: 0.0000161808	Time: 107.37216

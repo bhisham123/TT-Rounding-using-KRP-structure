@@ -17,31 +17,45 @@ addpath("./Data/nine_cookies/nx_40")
 %% Global parameters
 
 % Number of independent runs
-S = 3;
+S = 2;
 
 % Number of parameters ranges from 2^2 to 2^l
-l = 6; %8; 
-N = 2.^(l:l);
+l = 8; %8; 
+N = 2.^(3:l);
 gram = false;
+
+% select the cookies data 
+dataset = 'new';
+
 % select a number of the nine cookies
-list_cookies=[1,2,3,4,5,6,7,8,9];
+list_cookies=[1,2,3,7,8,9];
 
 %% Load FEM matrices
-
-matrix_1;
-matrix_2;
-matrix_3;
-matrix_4;
-matrix_5;
-matrix_6;
-matrix_7;
-matrix_8;
-matrix_9;
-matrix_10;
-rhs_;
-a0 = rhs;
-clear rhs;
-A0 = A{1};
+if strcmp(dataset,'old')
+    list_cookies=[2,3,4,5];
+    A{1} = readcoomat('A0.txt');
+    A{2} = readcoomat('A1.txt');
+    A{3} = readcoomat('A2.txt');
+    A{4} = readcoomat('A3.txt');
+    A{5} = readcoomat('A4.txt');    
+    a0 = readb('b.txt');
+    A0 = A{1};
+else strcmp(dataset,'new')
+    matrix_1;
+    matrix_2;
+    matrix_3;
+    matrix_4;
+    matrix_5;
+    matrix_6;
+    matrix_7;
+    matrix_8;
+    matrix_9;
+    matrix_10;
+    rhs_;
+    a0 = rhs;
+    clear rhs;
+    A0 = A{1};
+end
 
 n1 = length(A0);
 % A = speye(n1);
@@ -92,6 +106,7 @@ for i = 1:length(N)
     MaxD = 1e1;
 
     d = linspace(MinD, MaxD, n);
+    % d = d-min(d);
 
     % Matrices and operator in Kronecker form
     D = sparse(1:n, 1:n, d);
@@ -107,27 +122,40 @@ for i = 1:length(N)
     for p = 1 : length(list_cookies) + 1
         for q = 1 : length(list_cookies) + 1
             if p == 1
-                C{1,q} = A{p};
+                % C{1,q} = A{p};
+                if q == 1
+                    C{1,q} = A{q};
+                    fprintf('A{%d}\t',q);
+                else
+                    C{1,q} = A{list_cookies(q-1)+1};
+                    fprintf('A{%d}\t',list_cookies(q-1)+1);
+                end
+
             else
                 if p == q
                     C{p,q} = D;
+                    fprintf('D{0}\t');
                 else
                     C{p,q} = B;
+                    fprintf('B{0}\t')
                 end
             end
         end
+        fprintf('\n');
     end
-    A = C;
-    clear C;
+    % A = C;
+    % clear C;
     
 
     % TT-GMRES parameter setup
     tol      = 1e-8;
     maxit    = 50;
 
-    mat = A{1,1};
+    mat = C{1,1};
     for j = 1 : length(list_cookies)
-        mat = mat + A{1,i+1};
+        % mat = mat + A{1,i+1};
+        mat = mat + C{1,j+1};
+        fprintf('A{1,%d} + ',list_cookies(j)+1);
     end
     [L,U,p]  = lu(mat, 'vector');
     clear mat;
@@ -137,22 +165,21 @@ for i = 1:length(N)
     b        = TTscale(b, 1/normb);
     normb    = TTnorm(b);
 
-    Op            = @(x)       TTsummandsKronOp(A, x);
+    Op            = @(x)       TTsummandsKronOp(C, x);
 
     deterministic = @(W,a,tol) TTsum(W, a, tol);
     deterministic_gram = @(W,a,tol) TTsum_Gram(W, a, tol);
     randomized    = @(W,a,tol) TTsum_Randomize_then_Orthogonalize(W, a, tol);
     randomized_krp    = @(W,a,tol) TTsum_Randomize_then_Orthogonalize_KRP(W, a, tol);
 
-    for s=1:S
-
-        if gram
-            fprintf("*********\nDeterministic GRAM TT-GMRES run - n2 = %i\t", n);
+    if gram
+        for s=1:S
+            fprintf("\n*********\nDeterministic GRAM TT-GMRES run - n2 = %i\t", n);
             tStart = tic;
             [x, ranksN, sumtime, optime, prectime, remtime] = timed_TTGMRES(Op, b, tol, maxit, prec, tols, deterministic_gram);
             tEnd = toc(tStart);
             fprintf("Elapsed time is %.2f seconds.\n", tEnd);
-            t = TTsummandsKronOp(A,x);
+            t = TTsummandsKronOp(C,x);
             r = t{1};
             for j=2:length(t)
                 r = TTaxby(1., r, 1., t{j});
@@ -169,15 +196,19 @@ for i = 1:length(N)
             precTimeGramGMRES(i,s) = prectime;
             remTimeGramGMRES(i,s)  = remtime;
             runtimeGramGMRES(i,s)  = tEnd;
+
+            file_name = "Cookies_nx40_gram_"+num2str(length(list_cookies))+"_"+dataset+".mat";
+            save(file_name, 'sumTimeGramGMRES', 'opTimeGramGMRES','precTimeGramGMRES','remTimeGramGMRES','runtimeGramGMRES','ranksGram');
         end
+    end
 
-
-        fprintf("*********\nRandomized TT-GMRES run - n2 = %i\t", n);
+    for s=1:S
+        fprintf("\n*********\nRandomized TT-GMRES run - n2 = %i\t", n);
         tStart = tic;
         [x, ranksR, sumtime, optime, prectime, remtime] = timed_TTGMRES(Op, b, tol, maxit, prec, tols, randomized);
         tEnd = toc(tStart);
         fprintf("Elapsed time is %.2f seconds.\n", tEnd);
-        t = TTsummandsKronOp(A,x);
+        t = TTsummandsKronOp(C,x);
         r = t{1};
         for j=2:length(t)
             r = TTaxby(1., r, 1., t{j});
@@ -195,13 +226,17 @@ for i = 1:length(N)
         remTimeRandGMRES(i,s)   = remtime;
         runtimeRandGMRES(i,s)   = tEnd;
 
+        file_name = "Cookies_nx40_randomized_then_orthogonalize_"+num2str(length(list_cookies))+"_"+dataset+".mat";
+        save(file_name, 'sumTimeRandGMRES', 'opTimeRandGMRES','precTimeRandGMRES','remTimeRandGMRES','runtimeRandGMRES','ranksrand');
+    end
 
+    for s=1:S
         fprintf("*********\nRandomized-KRP TT-GMRES run - n2 = %i\t", n);
         tStart = tic;
         [x, ranksR_KRP, sumtime, optime, prectime, remtime] = timed_TTGMRES(Op, b, tol, maxit, prec, tols, randomized_krp);
         tEnd = toc(tStart);
         fprintf("Elapsed time is %.2f seconds.\n", tEnd);
-        t = TTsummandsKronOp(A,x);
+        t = TTsummandsKronOp(C,x);
         r = t{1};
         for j=2:length(t)
             r = TTaxby(1., r, 1., t{j});
@@ -219,13 +254,17 @@ for i = 1:length(N)
         remTimeRandKRPGMRES(i,s)   = remtime;
         runtimeRandKRPGMRES(i,s)   = tEnd;
 
+        file_name = "Cookies_nx40_randomized_then_orthogonalize_krp_"+num2str(length(list_cookies))+"_"+dataset+".mat";
+        save(file_name, 'sumTimeRandKRPGMRES', 'opTimeRandKRPGMRES','precTimeRandKRPGMRES','remTimeRandKRPGMRES','runtimeRandKRPGMRES','ranksrandkrp');
+    end
 
+    for s=1:S
         fprintf("*********\nDeterministic TT-GMRES run - n2 = %i\t", n);
         tStart = tic;
         [x, ranksN, sumtime, optime, prectime, remtime] = timed_TTGMRES(Op, b, tol, maxit, prec, tols, deterministic);
         tEnd = toc(tStart);
         fprintf("Elapsed time is %.2f seconds.\n", tEnd);
-        t = TTsummandsKronOp(A,x);
+        t = TTsummandsKronOp(C,x);
         r = t{1};
         for j=2:length(t)
             r = TTaxby(1., r, 1., t{j});
@@ -242,8 +281,27 @@ for i = 1:length(N)
         precTimeNormalGMRES(i,s) = prectime;
         remTimeNormalGMRES(i,s)  = remtime;
         runtimeNormalGMRES(i,s)  = tEnd;   
+
+
+        file_name = "Cookies_nx40_det_"+num2str(length(list_cookies))+"_"+dataset+".mat";
+        save(file_name, 'sumTimeNormalGMRES', 'opTimeNormalGMRES','precTimeNormalGMRES','remTimeNormalGMRES','runtimeNormalGMRES','ranksnormal');
     end
 end
+% clear all
+% % Number of parameters ranges from 2^2 to 2^l
+% l = 4; %8; 
+% N = 2.^(3:l);
+% gram = false;
+% 
+% dataset = '9';
+% list_cookies=[1,3,7,9];
+
+if gram
+    load("Cookies_nx40_gram_"+num2str(length(list_cookies))+"_"+dataset+".mat");
+end
+load("Cookies_nx40_randomized_then_orthogonalize_"+num2str(length(list_cookies))+"_"+dataset+".mat");
+load("Cookies_nx40_randomized_then_orthogonalize_krp_"+num2str(length(list_cookies))+"_"+dataset+".mat");
+load("Cookies_nx40_det_"+num2str(length(list_cookies))+"_"+dataset+".mat");
 
 % Discard results of first run
 sumTimeNormalGMRES = sumTimeNormalGMRES(:,2:end);
@@ -251,11 +309,12 @@ otherTimeNormalGMRES = opTimeNormalGMRES+precTimeNormalGMRES+remTimeNormalGMRES;
 otherTimeNormalGMRES = otherTimeNormalGMRES(:,2:end);
 runtimeNormalGMRES = runtimeNormalGMRES(:,2:end);
 
-sumTimeGramGMRES = sumTimeGramGMRES(:,2:end);
-otherTimeGramGMRES = opTimeGramGMRES+precTimeGramGMRES+remTimeGramGMRES;
-otherTimeGramGMRES = otherTimeGramGMRES(:,2:end);
-runtimeGramGMRES = runtimeGramGMRES(:,2:end);
-
+if gram
+    sumTimeGramGMRES = sumTimeGramGMRES(:,2:end);
+    otherTimeGramGMRES = opTimeGramGMRES+precTimeGramGMRES+remTimeGramGMRES;
+    otherTimeGramGMRES = otherTimeGramGMRES(:,2:end);
+    runtimeGramGMRES = runtimeGramGMRES(:,2:end);
+end
 
 sumTimeRandGMRES = sumTimeRandGMRES(:,2:end);
 otherTimeRandGMRES = opTimeRandGMRES+precTimeRandGMRES+remTimeRandGMRES;
@@ -391,14 +450,14 @@ xlabel('Number of parameter samples I_2 = \ldots = I_N (log scale)', 'FontSize',
 ylabel('Speedup', 'FontSize', 18)
 xticks(N);
 set(gca,'FontSize',16)
-grid on
+% grid on
 
-if gram
-    exportgraphics(f, 'TTGMRES_Speedup_with_Gram.png')
-else
-    exportgraphics(f, 'TTGMRES_Speedup.png')
-    exportgraphics(f, 'TTGMRES_Speedup.pdf')
-end
+% if gram
+%     exportgraphics(f, 'TTGMRES_Speedup_with_Gram.png')
+% else
+%     exportgraphics(f, 'TTGMRES_Speedup.png')
+%     exportgraphics(f, 'TTGMRES_Speedup.pdf')
+% end
 
 f = figure(3);
 clf();
@@ -454,12 +513,12 @@ xlabel('TT-GMRES iteration number', 'FontSize', 18)
 ylabel('TT-rank', 'FontSize', 18)
 set(gca,'FontSize',16)
 
-if gram
-    exportgraphics(f, 'TTGMRES_Ranks_with_Gram.png')
-else
-    exportgraphics(f, 'TTGMRES_Ranks.png')
-    exportgraphics(f, 'TTGMRES_Ranks.pdf')
-end
+% if gram
+%     exportgraphics(f, 'TTGMRES_Ranks_with_Gram.png')
+% else
+%     exportgraphics(f, 'TTGMRES_Ranks.png')
+%     exportgraphics(f, 'TTGMRES_Ranks.pdf')
+% end
 
 beep;
 pause(1)

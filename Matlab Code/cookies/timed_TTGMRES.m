@@ -31,13 +31,14 @@ tStart = tic;
 time_Other =  time_Other + toc(tStart);
 
 [~,I,~] = TTsizes(b);
+
 fprintf(fileID, 'Mode dimns:');
 fprintf(fileID, ' %2d', I);
 fprintf(fileID, '\n');
 
-time_k = 0
+time_k = 0;
 while(k < maxit && normres > tol * normb)
-    k
+    % k
     tStart = tic;
         k = k + 1;
         w = prec(V{k});
