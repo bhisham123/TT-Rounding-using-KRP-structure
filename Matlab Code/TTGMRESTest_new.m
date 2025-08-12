@@ -10,8 +10,9 @@ addpath("./TTcore/");
 addpath("./TTrandomized/");
 addpath("./Data/");
 addpath("./cookies/");
-addpath("./Gram/")
-addpath("./Data/nine_cookies/nx_40")
+addpath("./Gram/");
+nx = 'nx_40';
+addpath("./Data/nine_cookies/"+nx+"/");
 
 
 %% Global parameters
@@ -20,7 +21,7 @@ addpath("./Data/nine_cookies/nx_40")
 S = 2;
 
 % Number of parameters ranges from 2^2 to 2^l
-l = 8; %8; 
+l = 8; 
 N = 2.^(3:l);
 gram = false;
 
@@ -28,11 +29,11 @@ gram = false;
 dataset = 'new';
 
 % select a number of the nine cookies
-list_cookies=[1,2,3,7,8,9];
+list_cookies=[1,3,7,9];
 
 %% Load FEM matrices
-if strcmp(dataset,'old')
-    list_cookies=[2,3,4,5];
+if dataset == 'old'
+    list_cookies=[1,2,3,4];
     A{1} = readcoomat('A0.txt');
     A{2} = readcoomat('A1.txt');
     A{3} = readcoomat('A2.txt');
@@ -40,7 +41,7 @@ if strcmp(dataset,'old')
     A{5} = readcoomat('A4.txt');    
     a0 = readb('b.txt');
     A0 = A{1};
-else strcmp(dataset,'new')
+else dataset == 'new'
     matrix_1;
     matrix_2;
     matrix_3;
@@ -55,6 +56,7 @@ else strcmp(dataset,'new')
     a0 = rhs;
     clear rhs;
     A0 = A{1};
+    size(A0)
 end
 
 n1 = length(A0);
@@ -68,6 +70,11 @@ sumTimeNormalGMRES = zeros(length(N),S);
 sumTimeGramGMRES = zeros(length(N),S);
 sumTimeRandGMRES = zeros(length(N),S);
 sumTimeRandKRPGMRES = zeros(length(N),S);
+
+res_err_normal = zeros(length(N),S);
+res_err_gram = zeros(length(N),S);
+res_err_rand = zeros(length(N),S);
+res_err_randKRP = zeros(length(N),S);
 
 
 opTimeNormalGMRES = zeros(length(N),S);
@@ -106,7 +113,6 @@ for i = 1:length(N)
     MaxD = 1e1;
 
     d = linspace(MinD, MaxD, n);
-    % d = d-min(d);
 
     % Matrices and operator in Kronecker form
     D = sparse(1:n, 1:n, d);
@@ -191,14 +197,16 @@ for i = 1:length(N)
             for j = 1 : size(ranksN,1)
                 ranksGram{i}(j,s) = max(ranksN{j}); 
             end
+
+            res_err_gram(i,s) = TTnorm(r, "OLR")/normb;
             sumTimeGramGMRES(i,s)  = sumtime;
             opTimeGramGMRES(i,s)   = optime;
             precTimeGramGMRES(i,s) = prectime;
             remTimeGramGMRES(i,s)  = remtime;
             runtimeGramGMRES(i,s)  = tEnd;
 
-            file_name = "Cookies_nx40_gram_"+num2str(length(list_cookies))+"_"+dataset+".mat";
-            save(file_name, 'sumTimeGramGMRES', 'opTimeGramGMRES','precTimeGramGMRES','remTimeGramGMRES','runtimeGramGMRES','ranksGram');
+            file_name = "Cookies_gram_"+num2str(length(list_cookies))+"_"+dataset+"_"+nx+"_maxD_"+num2str(MaxD)+".mat";
+            % save(file_name, 'sumTimeGramGMRES', 'opTimeGramGMRES','precTimeGramGMRES','remTimeGramGMRES','runtimeGramGMRES','ranksGram','gram','N','dataset','list_cookies','res_err_gram');
         end
     end
 
@@ -220,14 +228,16 @@ for i = 1:length(N)
         for j = 1 : size(ranksR,1)
             ranksrand{i}(j,s) = max(ranksR{j});
         end
+
+        res_err_rand(i,s) = TTnorm(r, "OLR")/normb;
         sumTimeRandGMRES(i,s)   = sumtime;
         opTimeRandGMRES(i,s)    = optime;
         precTimeRandGMRES(i,s)  = prectime;
         remTimeRandGMRES(i,s)   = remtime;
         runtimeRandGMRES(i,s)   = tEnd;
 
-        file_name = "Cookies_nx40_randomized_then_orthogonalize_"+num2str(length(list_cookies))+"_"+dataset+".mat";
-        save(file_name, 'sumTimeRandGMRES', 'opTimeRandGMRES','precTimeRandGMRES','remTimeRandGMRES','runtimeRandGMRES','ranksrand');
+        file_name = "Cookies_randomized_then_orthogonalize_"+num2str(length(list_cookies))+"_"+dataset+"_"+nx+"_maxD_"+num2str(MaxD)+".mat";
+        % save(file_name, 'sumTimeRandGMRES', 'opTimeRandGMRES','precTimeRandGMRES','remTimeRandGMRES','runtimeRandGMRES','ranksrand','gram','N','dataset','list_cookies','res_err_rand');
     end
 
     for s=1:S
@@ -248,14 +258,16 @@ for i = 1:length(N)
         for j = 1 : size(ranksR_KRP,1)
             ranksrandkrp{i}(j,s) = max(ranksR_KRP{j});
         end
+
+        res_err_randKRP(i,s) = TTnorm(r, "OLR")/normb;
         sumTimeRandKRPGMRES(i,s)   = sumtime;
         opTimeRandKRPGMRES(i,s)    = optime;
         precTimeRandKRPGMRES(i,s)  = prectime;
         remTimeRandKRPGMRES(i,s)   = remtime;
         runtimeRandKRPGMRES(i,s)   = tEnd;
 
-        file_name = "Cookies_nx40_randomized_then_orthogonalize_krp_"+num2str(length(list_cookies))+"_"+dataset+".mat";
-        save(file_name, 'sumTimeRandKRPGMRES', 'opTimeRandKRPGMRES','precTimeRandKRPGMRES','remTimeRandKRPGMRES','runtimeRandKRPGMRES','ranksrandkrp');
+        file_name = "Cookies_randomized_then_orthogonalize_krp_"+num2str(length(list_cookies))+"_"+dataset+"_"+nx+"_maxD_"+num2str(MaxD)+".mat";
+        % save(file_name, 'sumTimeRandKRPGMRES', 'opTimeRandKRPGMRES','precTimeRandKRPGMRES','remTimeRandKRPGMRES','runtimeRandKRPGMRES','ranksrandkrp','gram','N','dataset','list_cookies','res_err_randKRP');
     end
 
     for s=1:S
@@ -276,6 +288,8 @@ for i = 1:length(N)
         for j = 1 : size(ranksN,1)
             ranksnormal{i}(j,s) = max(ranksN{j});
         end
+
+        res_err_normal(i,s) = TTnorm(r, "OLR")/normb;
         sumTimeNormalGMRES(i,s)  = sumtime;
         opTimeNormalGMRES(i,s)   = optime;
         precTimeNormalGMRES(i,s) = prectime;
@@ -283,8 +297,8 @@ for i = 1:length(N)
         runtimeNormalGMRES(i,s)  = tEnd;   
 
 
-        file_name = "Cookies_nx40_det_"+num2str(length(list_cookies))+"_"+dataset+".mat";
-        save(file_name, 'sumTimeNormalGMRES', 'opTimeNormalGMRES','precTimeNormalGMRES','remTimeNormalGMRES','runtimeNormalGMRES','ranksnormal');
+        file_name = "Cookies_det_"+num2str(length(list_cookies))+"_"+dataset+"_"+nx+"_maxD_"+num2str(MaxD)+".mat";
+        % save(file_name, 'sumTimeNormalGMRES', 'opTimeNormalGMRES','precTimeNormalGMRES','remTimeNormalGMRES','runtimeNormalGMRES','ranksnormal','gram','N','dataset','list_cookies','res_err_normal');
     end
 end
 % clear all
@@ -296,12 +310,12 @@ end
 % dataset = '9';
 % list_cookies=[1,3,7,9];
 
-if gram
-    load("Cookies_nx40_gram_"+num2str(length(list_cookies))+"_"+dataset+".mat");
-end
-load("Cookies_nx40_randomized_then_orthogonalize_"+num2str(length(list_cookies))+"_"+dataset+".mat");
-load("Cookies_nx40_randomized_then_orthogonalize_krp_"+num2str(length(list_cookies))+"_"+dataset+".mat");
-load("Cookies_nx40_det_"+num2str(length(list_cookies))+"_"+dataset+".mat");
+% if gram
+%     load("Cookies_gram_"+num2str(length(list_cookies))+"_"+dataset+"_"+nx+".mat");
+% end
+% load("Cookies_randomized_then_orthogonalize_"+num2str(length(list_cookies))+"_"+dataset+"_"+nx+".mat");
+% load("Cookies_randomized_then_orthogonalize_krp_"+num2str(length(list_cookies))+"_"+dataset+"_"+nx+".mat");
+% load("Cookies_det_"+num2str(length(list_cookies))+"_"+dataset+"_"+nx+".mat");
 
 % Discard results of first run
 sumTimeNormalGMRES = sumTimeNormalGMRES(:,2:end);

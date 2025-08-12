@@ -57,7 +57,7 @@ end
 % Left-to-right randomization and orthogonalization
 for n = 1:N-1
     Zn = X{n};
-    Yn = X{n} * W{n};
+    Yn = X{n} * W{n};  %(:,1:min(size(Zn,1),size(W{n},2)));
     [X{n}, ~] = qr(Yn, 0);
     Mn = X{n}' * Zn;
     lr = [0, cumsum(rs(n + 1, :))];
