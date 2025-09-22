@@ -58,7 +58,13 @@ end
 for n = 1:N-1
     Zn = X{n};
     Yn = X{n} * W{n};  %(:,1:min(size(Zn,1),size(W{n},2)));
+    % if size(Yn,2) > size(Yn,1) | size(Yn,2) > size(Zn,2)
+    %     disp('size error')
+    % end
     [X{n}, ~] = qr(Yn, 0);
+    % if norm(X{n}'*X{n} - eye(size(X{n},2)),'fro') > 10^-5
+    %     norm(X{n}'*X{n} - eye(size(X{n},2)),'fro')
+    % end
     Mn = X{n}' * Zn;
     lr = [0, cumsum(rs(n + 1, :))];
     rr = [0, cumsum(rs(n + 2, :))];

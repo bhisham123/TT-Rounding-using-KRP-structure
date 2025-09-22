@@ -1,4 +1,4 @@
-function X = TTsum_Randomize_then_Orthogonalize_KRP(S, a, tol, incr_f,use_svd_filtering,svd_thresh)
+function X = TTsum_Randomize_then_Orthogonalize_KRP(S, a, tol, incr_f, samples)
 %TTsum_Randomize_then_Orthogonalize_KRP: Randomized TT-sum with Khatri-Rao projections and adaptive rounding.
 %
 %   X = TTsum_Randomize_then_Orthogonalize_KRP(S, a, tol, incr_f, use_svd_filtering, svd_thresh)
@@ -11,23 +11,17 @@ function X = TTsum_Randomize_then_Orthogonalize_KRP(S, a, tol, incr_f,use_svd_fi
 %     - a                : Vector of weights corresponding to each tensor in S (same length as S).
 %     - tol              : Desired relative approximation tolerance (Frobenius norm). Default: 1e-10.
 %     - incr_f           : Increment factor controlling the block size for randomized projections.
-%                          The block size is computed as floor(cols/incr_f). Default: 20.
-%     - use_svd_filtering: Logical flag. If true, SVD-based filtering is applied to eliminate
-%                          near-linearly dependent directions during orthogonalization. Default: true.
-%     - svd_thresh       : Threshold used for singular value filtering. Singular values smaller than
-%                          svd_thresh * max(singular values) are discarded. Default: 1e-7.
-%
+%                          The block size is computed as floor(maxr*incr_f). Default: 0.05.
+%     - smaples          : minimum number of smaples to use for norm estimation, Default: 20.
+%     
 %   Output:
 %     - X : The TT-format tensor (as a cell array of cores) representing the approximate weighted sum
 %           of the input TT-tensors in S.
 %
 
 % ----------- Default Parameters --------------
-if nargin < 6 || isempty(use_svd_filtering)
-    svd_thresh = 1e-7;
-end
-if nargin < 5 || isempty(use_svd_filtering)
-    use_svd_filtering = false;
+if nargin < 5 || isempty(samples)
+    samples = 20;
 end
 if nargin < 4 || isempty(incr_f)
     incr_f = 0.05;
@@ -51,12 +45,22 @@ max_mod_rank = max(rs, [], 2);
 
 for j = 1:m
     S{j} = TTscale(S{j}, a(j));
-    % W_Ind(:,j) = KRPpartialContractionsRL_Cookies(S{j}, O, 1);
 end
 
 
 % Form the complete random projections
 W = cell(N-1,1);
+
+
+temp_init_b = max(max(max_mod_rank),samples); %initial block size
+O = KRPrand(I, temp_init_b, 1);
+W_Ind_New = cell(N-1,m);
+for j = 1:m
+    W_Ind_New(:,j) = KRPpartialContractionsRL_Cookies(S{j}, O, 1);
+end
+for j = 1:N-1
+    W{j} = [W{j},vertcat(W_Ind_New{j,:})];
+end
 
 
 % Initialize with the first core of the formal TT-sum
@@ -67,12 +71,15 @@ for j = 1:m
     X{1}(:, lr(j)+1 : lr(j+1)) = S{j}{1};
 end
 
+normX_est = norm(X{1}*W{1},'fro')/sqrt(temp_init_b); %Estimate norm of the sum
+tau = tol*normX_est/sqrt(N-1);  %error distributed to each core
+
 % Left-to-right randomization and orthogonalization
 for n = 1:N-1
     current_core = X{n}; %current core of the TT-sum
     [rows,cols] = size(current_core);
     cols = min(rows,cols);
-    Init_b =  max(max_mod_rank(n+1),2); %initial block size
+    Init_b = max_mod_rank(n+1); %initial block size
     orthogonal_cols = 0;
 
     %compute partial sketches
@@ -80,7 +87,6 @@ for n = 1:N-1
         O = KRPrand(I, Init_b-size(W{n},2), n);
         W_Ind_New = cell(N-1,m);
         for j = 1:m
-            S{j} = TTscale(S{j}, a(j));
             W_Ind_New(:,j) = KRPpartialContractionsRL_Cookies(S{j}, O, n);
         end
         for j = n:N-1
@@ -90,11 +96,6 @@ for n = 1:N-1
 
 
     Yn = current_core * W{n}(:,1:Init_b); %compute sketch
-
-    if n ==1
-        normX_est = norm(Yn,'fro')/sqrt(Init_b); %Estimate norm of the sum
-        tau = tol*normX_est/sqrt(N-1);  %error distributed to each core
-    end
 
     [X{n}, ~] = qr(Yn, 0); %tall and skinny QR
 
@@ -115,63 +116,39 @@ for n = 1:N-1
         end
         X{N} = h2v(X{N}, I(N));
     end
+    
 
     orthogonal_cols = orthogonal_cols + Init_b; %update the orthogonal columns count    
 
-    b = max(2,floor(cols*incr_f)); %block size for increment
-    % b = min(50,max(2,floor(cols*incr_f))); %block size for increment
+    b = max(1,floor(cols*incr_f)); %block size for increment
+
+    tempb = max(b,samples); %samples for norm estimation
 
     %compute partial sketches
-    if size(W{n},2) < orthogonal_cols+b
-        O = KRPrand(I, b, n);
+    if size(W{n},2) < orthogonal_cols+tempb
+        O = KRPrand(I, (orthogonal_cols+tempb)-size(W{n},2), n);
         W_Ind_New = cell(N-1,m);
         for j = 1:m
-            S{j} = TTscale(S{j}, a(j));
             W_Ind_New(:,j) = KRPpartialContractionsRL_Cookies(S{j}, O, n);
         end
         for j = n:N-1
             W{j} = [W{j},vertcat(W_Ind_New{j,:})]; 
         end
     end
-    Yn = current_core*W{n}(:,orthogonal_cols+1:orthogonal_cols+b); %compute sketch
+    Yn = current_core*W{n}(:,orthogonal_cols+1:orthogonal_cols+tempb); %compute sketch
     Yn = Yn - X{n}*(X{n}'*Yn); % Remove the directions already computed (orthogonalization)
 
-    if  norm(X{n}'*X{n}-eye(size(X{n},2)), 'fro') > 10^-8
-        disp('Orthonormality Error')
-
-    end
-
-
-    while (norm(Yn,'fro')/sqrt(b) > tau) 
+    while (norm(Yn,'fro')/sqrt(tempb) > tau) 
         b = min(b,cols - orthogonal_cols); 
         if b <= 0
             break
         end
 
         Yn = Yn(:,1:b);
-        % Yn = Yn - X{n}*(X{n}'*Yn); %Re-orthogonalization step
-
-        [Q, R] = qr(Yn, 0); %tall and skinny QR
-        [Q, R1] = qr(Q-X{n}*(X{n}'*Q), 0);
-        % [Q, ~] = qr(Q-X{n}*(X{n}'*Q), 0);
-
-        % if use_svd_filtering
-        %     R = R1*R;
-        %     [U1,s,~] = svd(R);
-        %     s = diag(s);
-        %     indices = s > svd_thresh*s(1);
-        %     if ~any(indices)
-        %         break; % No new info to add
-        %     end 
-        %     Q = Q*U1(:, indices);
-        %     b = sum(indices);
-        % end
-
+        [Q, ~] = qr(Yn, 0);   %tall and skinny QR
+        [Q, ~] = qr(Q-X{n}*(X{n}'*Q), 0); % Reorthogonalization
+       
         X{n} = [X{n},Q];  % Add new directions
-
-        if  norm(X{n}'*X{n}-eye(size(X{n},2)), 'fro') > 10^-8
-            disp('Orthonormality Error')
-        end
 
         %Pass remaining factor to the core on right
         Mn =  Q'*current_core;
@@ -192,16 +169,13 @@ for n = 1:N-1
 
         orthogonal_cols = orthogonal_cols + b;
 
-        if norm(X{n}'*X{n} - eye(size(X{n},2)),'fro') > 1e-7
-            disp([' n = ', num2str(n), ', Othogonality Error ', num2str(norm(X{n}'*X{n} - eye(size(X{n},2)),'fro')), ', Condition number = ', num2str(cond(current_core),'%.2e')])
-        end
+        tempb = max(b,samples);
 
         %Compute partial skeches
-        if size(W{n},2) < orthogonal_cols+b
-            O = KRPrand(I, b, n);
+        if size(W{n},2) < orthogonal_cols+tempb
+            O = KRPrand(I, (orthogonal_cols+tempb)-size(W{n},2), n);
             W_Ind_New = cell(N-1,m);
             for j = 1:m
-                S{j} = TTscale(S{j}, a(j));
                 W_Ind_New(:,j) = KRPpartialContractionsRL_Cookies(S{j}, O, n);
             end
             for j = n:N-1
@@ -209,10 +183,13 @@ for n = 1:N-1
             end
         end
 
-        Yn = current_core*W{n}(:,orthogonal_cols+1:orthogonal_cols+b); %compute sketch
+        Yn = current_core*W{n}(:,orthogonal_cols+1:orthogonal_cols+tempb); %compute sketch
         Yn = Yn - X{n}*(X{n}'*Yn); % Remove the directions already computed (orthogonalization)
     end
-
+    if norm(X{n}'*X{n} - eye(size(X{n},2)),'fro') > 1e-7
+        disp([' n = ', num2str(n), ', Othogonality Error ', num2str(norm(X{n}'*X{n} - eye(size(X{n},2)),'fro')), ', Condition number = ', num2str(cond(current_core),'%.2e')])
+        error('Orthonormality Error')
+    end
 end
 
 % TT-rounding of X, which is already orthogonalized.
@@ -231,3 +208,5 @@ for n = N:-1:2
     end
 end
 end
+
+

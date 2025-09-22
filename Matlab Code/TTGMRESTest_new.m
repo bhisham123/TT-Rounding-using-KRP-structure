@@ -18,7 +18,7 @@ addpath("./Data/nine_cookies/"+nx+"/");
 %% Global parameters
 
 % Number of independent runs
-S = 2;
+S = 3;
 
 % Number of parameters ranges from 2^2 to 2^l
 l = 8; 
@@ -29,7 +29,7 @@ gram = false;
 dataset = 'new';
 
 % select a number of the nine cookies
-list_cookies=[1,3,7,9];
+list_cookies=[1,2,3,5,7,8,9];
 
 %% Load FEM matrices
 if dataset == 'old'
@@ -110,7 +110,7 @@ for i = 1:length(N)
 
     % Distribution of parameters
     MinD = 1e0;
-    MaxD = 1e1;
+    MaxD = 5; %1e1;
 
     d = linspace(MinD, MaxD, n);
 
@@ -340,10 +340,11 @@ otherTimeRandKRPGMRES = opTimeRandKRPGMRES+precTimeRandKRPGMRES+remTimeRandKRPGM
 otherTimeRandKRPGMRES = otherTimeRandKRPGMRES(:,2:end);
 runtimeRandKRPGMRES = runtimeRandKRPGMRES(:,2:end);
 
+% file_name = "Cookies_"+num2str(length(list_cookies))+"_"+dataset+"_"+nx+"_maxD_"+num2str(MaxD)+".mat";
 % if gram
 %     save('test_case_with_gram_svd.mat', 'sumTimeNormalGMRES', 'otherTimeNormalGMRES', 'runtimeNormalGMRES','sumTimeGramGMRES', 'otherTimeGramGMRES', 'runtimeGramGMRES','sumTimeRandGMRES', 'otherTimeRandGMRES','runtimeRandGMRES','sumTimeRandKRPGMRES','otherTimeRandKRPGMRES','runtimeRandKRPGMRES','N','ranksrand','ranksnormal','ranksrandkrp',"ranksGram");
 % else
-%     save('test_case_without_gram_svd.mat', 'sumTimeNormalGMRES', 'otherTimeNormalGMRES', 'runtimeNormalGMRES','sumTimeRandGMRES', 'otherTimeRandGMRES','runtimeRandGMRES','sumTimeRandKRPGMRES','otherTimeRandKRPGMRES','runtimeRandKRPGMRES','N','ranksrand','ranksnormal','ranksrandkrp');
+%     save(file_name, 'sumTimeNormalGMRES', 'otherTimeNormalGMRES', 'runtimeNormalGMRES','sumTimeRandGMRES', 'otherTimeRandGMRES','runtimeRandGMRES','sumTimeRandKRPGMRES','otherTimeRandKRPGMRES','runtimeRandKRPGMRES','N','ranksrand','ranksnormal','ranksrandkrp');
 % end
 
 %% Plot Results
