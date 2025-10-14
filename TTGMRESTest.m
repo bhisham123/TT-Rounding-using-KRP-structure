@@ -8,8 +8,8 @@ close("all")
 %% Add path
 addpath("./TTcore/");
 addpath("./TTrandomized/");
-addpath("./cookies/");
-addpath("./Data/nine_cookies/nx_40/");
+addpath("./Dataset/")
+addpath("./Dataset/nine_cookies/nx_40/");
 
 
 %% Global parameters
@@ -22,7 +22,7 @@ l = 6;
 N = 2.^(3:l);
 
 % select the cookies data 
-dataset = 'old';
+dataset = 'new';
 
 %% Load FEM matrices
 if strcmp(dataset, 'old')
