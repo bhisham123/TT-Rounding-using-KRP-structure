@@ -1,8 +1,3 @@
-*.txt
-Matlab Code/*.txt
-Matlab Code/*.png
-Matlab Code/Data from Kahan
-Matlab Code/.DS_Store
-Matlab Code/tensor_toolbox
 .DS_Store
-Matlab Code/TTGMRESTest_old.m
+.log
+.asv
