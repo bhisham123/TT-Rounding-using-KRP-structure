@@ -51,7 +51,10 @@ hold on
 speedup_krp = median(runtimeNormalGMRES, 2) ./ median(runtimeRandKRPGMRES, 2);
 neg_krp = speedup_krp - min(runtimeNormalGMRES,[],2)./ max(runtimeRandKRPGMRES,[],2);
 pos_krp = max(runtimeNormalGMRES,[],2)./ min(runtimeRandKRPGMRES,[],2) - speedup_krp;
-errorbar(N, speedup_krp, neg_krp, pos_krp,'-s','Color','#FF8C00','markersize',10,'linewidth',2); 
+% errorbar(N, speedup_krp, neg_krp, pos_krp,'-s','Color','#FF8C00','markersize',10,'linewidth',2);
+errorbar(N, speedup_krp, neg_krp, pos_krp,'-.s','Color','#FF8080','markersize',10,'linewidth',2);
+
+
 
 
 
@@ -64,14 +67,17 @@ hold on
 speedup = median(runtimeNormalGMRES, 2) ./ median(runtimeRandGMRES, 2);
 neg = speedup - min(runtimeNormalGMRES,[],2)./ max(runtimeRandGMRES,[],2);
 pos = max(runtimeNormalGMRES,[],2)./ min(runtimeRandGMRES,[],2) - speedup;
-errorbar(N, speedup, neg, pos,'-s','Color','#7E2F8E','markersize',10,'linewidth',2);  %'Color','#008000'
+% errorbar(N, speedup, neg, pos,'-s','Color','#7E2F8E','markersize',10,'linewidth',2);  %'Color','#008000' 
+errorbar(N, speedup, neg, pos,'-.s','Color','#8080FF','markersize',10,'linewidth',2)
+
 
 set(gca, 'XScale', 'log')
 xlabel('Number of parameter samples n_2 = \ldots = n_d (log scale)', 'FontSize', 14)
 ylabel('Speedup', 'FontSize', 14)
 xticks(N);
 set(gca,'FontSize',14)
-legend('TT-Sum+Round-KRP','Total speedup-KRP', 'TT-Sum+Round-TTlike','Total speedup-TTlike', 'location', 'best','FontSize', 12.5)
+lgd1=legend('Sum-Round (Rand-Orth-KRP)','Total speedup (Rand-Orth-KRP)', 'Sum-Round (Rand-Orth)','Total speedup (Rand-Orth)');
+set(lgd1,'Position',[0.270548295454545 0.1208125 0.193636363636364 0.15875],'FontSize',12);
 box on
 grid on
 
@@ -100,7 +106,8 @@ hold off
 xlabel('TT-GMRES iteration number', 'FontSize', 14)
 ylabel('TT-rank', 'FontSize', 14)
 set(gca,'FontSize',14)
-legend([p3,p1,p2], 'Randomized TT-GMRES-KRP' , 'Randomized TT-GMRES-TTlike','Naive TT-GMRES', 'location', 'southeast','FontSize', 12.5)
+lgd2 = legend([p3,p1,p2], 'TT-GMRES-Rand-Orth-KRP' , 'TT-GMRES-Rand-Orth','Naive TT-GMRES');
+set(lgd2,'Position',[0.73 0.12 0.175 0.12125],'FontSize',12);
 box on
 grid on
 
@@ -113,8 +120,8 @@ avg_err_randKRP = mean(res_err_randKRP,2);
 
 f = figure('Position', [100, 100, 520, 400]);
 hold on 
-plot(N,avg_err_randKRP(1:length(N)),'r*-', 'LineWidth',2,'markersize',10,'DisplayName','Randomized TT-GMRES-KRP'); 
-plot(N,avg_err_rand(1:length(N)),'bo-','LineWidth',2,'markersize',10,'DisplayName','Randomized TT-GMRES-TTlike')
+plot(N,avg_err_randKRP(1:length(N)),'r*-', 'LineWidth',2,'markersize',10,'DisplayName','TT-GMRES-Rand-Orth-KRP'); 
+plot(N,avg_err_rand(1:length(N)),'bo-','LineWidth',2,'markersize',10,'DisplayName','TT-GMRES-Rand-Orth')
 plot(N,avg_err_normal(1:length(N)),'k+-','LineWidth',2,'markersize',10,'DisplayName','Naive TT-GMRES')
 
 set(gca, 'XScale', 'log')

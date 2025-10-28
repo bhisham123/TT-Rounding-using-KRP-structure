@@ -38,23 +38,29 @@ f=figure('Position', [100, 100, 1100, 400]);
 sp1 = subplot(1,2,1);
 hold on;
 
-sumtime_p1 = errorbar(N(1:4), med_sumTime_Normal, low_sumTime_Normal, high_sumTime_Normal, 'ko-', 'LineWidth', 2.2,'MarkerSize', 10, 'DisplayName', 'TT-Sum+Round-Naive');
-runtime_p1 = errorbar(N(1:4), med_runTime_Normal, low_runTime_Normal, high_runTime_Normal, 's--','Color' ,'#84563C','LineWidth', 2.2,'MarkerSize', 10, 'DisplayName', 'Total Time-Naive');
+sumtime_p1 = errorbar(N(1:4), med_sumTime_Normal, low_sumTime_Normal, high_sumTime_Normal, 'ko-', 'LineWidth', 2.2,'MarkerSize', 10, 'DisplayName', 'Sum-Round (Naive)');
+% runtime_p1 = errorbar(N(1:4), med_runTime_Normal, low_runTime_Normal, high_runTime_Normal, '-s','Color' ,'#84563C','LineWidth', 2.2,'MarkerSize', 10, 'DisplayName', 'Total time (Naive)');
+runtime_p1 = errorbar(N(1:4), med_runTime_Normal, low_runTime_Normal, high_runTime_Normal, '-.s','Color' ,'#808080','LineWidth', 2.2,'MarkerSize', 10, 'DisplayName', 'Total time (Naive)');
 
-sumtime_p2 = errorbar(N, med_sumTime_KRP, low_sumTime_KRP, high_sumTime_KRP, 'ro-','LineWidth', 2.2,'MarkerSize', 10, 'DisplayName','TT-Sum+Round-KRP');
-runtime_p2 = errorbar(N, med_runTime_KRP, low_runTime_KRP, high_runTime_KRP, '--s','Color','#FF8C00','LineWidth', 2.2,'MarkerSize', 10, 'DisplayName','Total Time-KRP');
 
-sumtime_p3 = errorbar(N, med_sumTime_TTlike, low_sumTime_TTlike, high_sumTime_TTlike, 'bo-','LineWidth', 2.2,'MarkerSize', 10, 'DisplayName', 'TT-Sum+Round-TTlike');
-runtime_p3 = errorbar(N, med_runTime_TTlike, low_runTime_TTlike, high_runTime_TTlike, '--s','Color','#7E2F8E','LineWidth', 2.2,'MarkerSize', 10, 'DisplayName', 'Total Time-TTlike');
+runtime_p2 = errorbar(N, med_runTime_KRP, low_runTime_KRP, high_runTime_KRP, '-.s','Color','#FF8080','LineWidth', 2.2,'MarkerSize', 10, 'DisplayName','Total time (Rand-Orth-KRP)');
+sumtime_p2 = errorbar(N, med_sumTime_KRP, low_sumTime_KRP, high_sumTime_KRP, 'ro-','LineWidth', 2.2,'MarkerSize', 10, 'DisplayName','Sum-Round (Rand-Orth-KRP)');
+% runtime_p2 = errorbar(N, med_runTime_KRP, low_runTime_KRP, high_runTime_KRP, '-s','Color','#FF8C00','LineWidth', 2.2,'MarkerSize', 10, 'DisplayName','Total time (Rand-Orth-KRP)');
+
+runtime_p3 = errorbar(N, med_runTime_TTlike, low_runTime_TTlike, high_runTime_TTlike, '-.s','Color','#8080FF','LineWidth', 2.2,'MarkerSize', 10, 'DisplayName', 'Total time (Rand-Orth)');
+sumtime_p3 = errorbar(N, med_sumTime_TTlike, low_sumTime_TTlike, high_sumTime_TTlike, 'bo-','LineWidth', 2.2,'MarkerSize', 10, 'DisplayName', 'Sum-Round (Rand-Orth)');
+% runtime_p3 = errorbar(N, med_runTime_TTlike, low_runTime_TTlike, high_runTime_TTlike, '-s','Color','#7E2F8E','LineWidth', 2.2,'MarkerSize', 10, 'DisplayName', 'Total time (Rand Orth)');
+
 
 set(gca, 'XScale', 'log')
 set(gca, 'YScale', 'log')
 xlabel('Number of parameter samples n_2 = \ldots = n_d (log scale)', 'FontSize', 14)
 ylabel('Time (Seconds)', 'FontSize', 14)
 xticks(N);
+ylim([5*10^1, 10^5])
 set(gca,'FontSize',14)
 lgd1 = legend(sp1, [runtime_p2,sumtime_p2,runtime_p3,sumtime_p3,runtime_p1,sumtime_p1]);
-set(lgd1,'Units', 'normalized','Position',[0.307727272727273 0.12 0.153181818181818 0.24125], 'FontSize', 12.5);
+set(lgd1,'Units', 'normalized','Position',[0.278181818181818 0.1225 0.185 0.24125], 'FontSize', 12);
 box on
 grid on;
 
@@ -84,7 +90,9 @@ hold off
 xlabel('TT-GMRES iteration number', 'FontSize', 14)
 ylabel('TT-rank', 'FontSize', 14)
 set(gca,'FontSize',14)
-legend([p3,p1,p2], 'Randomized TT-GMRES-KRP' , 'Randomized TT-GMRES-TTlike','Naive TT-GMRES', 'location', 'southeast', 'FontSize', 12.5)
+legend2 = legend([p3,p1,p2], 'TT-GMRES-Rand-Orth-KRP' , 'TT-GMRES-Rand-Orth','Naive TT-GMRES');
+
+set(legend2,'Position',[0.729090909090909 0.12125 0.175 0.12125],'FontSize',12);
 box on
 grid on;
 exportgraphics(f, 'Fig8.png','Resolution', 400)
@@ -97,8 +105,8 @@ avg_err_randKRP = mean(res_err_randKRP,2);
 
 f = figure('Position', [100, 100, 520, 400]);
 hold on 
-plot(N,avg_err_randKRP(1:length(N)),'r*-', 'LineWidth',2.2,'markersize',10,'DisplayName','Randomized TT-GMRES-KRP'); 
-plot(N,avg_err_rand(1:length(N)),'bo-','LineWidth',2.2,'markersize',10,'DisplayName','Randomized TT-GMRES-TTlike')
+plot(N,avg_err_randKRP(1:length(N)),'r*-', 'LineWidth',2.2,'markersize',10,'DisplayName','TT-GMRES-Rand-Orth-KRP'); 
+plot(N,avg_err_rand(1:length(N)),'bo-','LineWidth',2.2,'markersize',10,'DisplayName','TT-GMRES-Rand-Orth')
 plot(N,avg_err_normal(1:length(N)),'k+-','LineWidth',2.2,'markersize',10,'DisplayName','Naive TT-GMRES')
 
 set(gca, 'XScale', 'log')
@@ -109,7 +117,9 @@ ylabel('Relative residual error', 'FontSize', 14)
 xticks(N);
 set(gca,'FontSize',15)
 
-legend('location', 'best','FontSize', 13.5)
+lgd = legend('FontSize', 11.8);
+set(lgd, 'Units', 'normalized');                     % Use normalized units
+set(lgd, 'Position', [0.4, 0.45, 0.2, 0.1]);          % Manually center it
 
 box on
 grid on

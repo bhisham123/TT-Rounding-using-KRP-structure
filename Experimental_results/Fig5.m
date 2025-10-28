@@ -62,8 +62,8 @@ sp1 = subplot(3,2,1,'Parent',f);
 hold on;
 
 p1 = errorbar(5*x, med_LR, err_low_LR, err_high_LR, 'ko', 'LineWidth', 2,'MarkerSize', 10, 'DisplayName', 'TT-Rounding');
-p2 = errorbar(5*x, med_RandKtr, err_low_RandKtr, err_high_RandKtr, 'r*','LineWidth', 2,'MarkerSize', 10, 'DisplayName','TT-KRP (Adap)');
-p3 = errorbar(5*x, med_RandLR, err_low_RandLR, err_high_RandLR, 'b+','LineWidth', 2,'MarkerSize', 10, 'DisplayName', 'TT-Orth-Rand (Adap)');
+p2 = errorbar(5*x, med_RandKtr, err_low_RandKtr, err_high_RandKtr, 'r*','LineWidth', 2,'MarkerSize', 10, 'DisplayName','Rand-Orth-KRP (Adap)');
+p3 = errorbar(5*x, med_RandLR, err_low_RandLR, err_high_RandLR, 'b+','LineWidth', 2,'MarkerSize', 10, 'DisplayName', 'Orth-Rand (Adap)');
 
 xticks(5*x)
 xticklabels({'1e-1','1e-2', '1e-3', '1e-4', '1e-5','1e-6','1e-7'})
@@ -81,11 +81,11 @@ grid on;
 
 sp2 = subplot(3,2,3,'Parent',f);
 hold on
-plot(5*(1:length(mean_speedupRandKtr)), mean_speedupRandKtr,   'r*-','markersize',10.5,'linewidth',2,'DisplayName', 'TT-KRP (Adap)'); 
-plot(5*(1:length(mean_speedupRandKtr_fix)), mean_speedupRandKtr_fix,   's--','Color','#FF8C00','markersize',10.5,'linewidth',2,'DisplayName', 'TT-KRP (Fix)'); 
-plot(5*(1:length(mean_speedupRandOrth_fix)),  mean_speedupRandOrth_fix,'x--','Color','#7E2F8E','markersize',10.5,'linewidth',2,'DisplayName', 'TT-Rand-Orth')
-plot(5*(1:length(mean_speedupRandLR)),  mean_speedupRandLR,'b+-','markersize',10.5,'linewidth',2,'DisplayName', 'TT-Orth-Rand (Adap)')
-plot(5*(1:length(mean_speedupRandLR_fix)),  mean_speedupRandLR_fix,'bd--','markersize',10.5,'linewidth',2,'DisplayName', 'TT-Orth-Rand (Fix)')
+plot(5*(1:length(mean_speedupRandKtr)), mean_speedupRandKtr,   'r*-','markersize',10.5,'linewidth',2,'DisplayName', 'Rand-Orth-KRP (Adap)'); 
+plot(5*(1:length(mean_speedupRandKtr_fix)), mean_speedupRandKtr_fix,   's--','Color','#FF8C00','markersize',10.5,'linewidth',2,'DisplayName', 'Rand-Orth-KRP (Fix)'); 
+plot(5*(1:length(mean_speedupRandOrth_fix)),  mean_speedupRandOrth_fix,'x--','Color','#7E2F8E','markersize',10.5,'linewidth',2,'DisplayName', 'Rand-Orth')
+plot(5*(1:length(mean_speedupRandLR)),  mean_speedupRandLR,'b+-','markersize',10.5,'linewidth',2,'DisplayName', 'Orth-Rand (Adap)')
+plot(5*(1:length(mean_speedupRandLR_fix)),  mean_speedupRandLR_fix,'bd--','markersize',10.5,'linewidth',2,'DisplayName', 'Orth-Rand (Fix)')
 plot(5*(1:length(mean_speedupLR)), mean_speedupLR,'ko-','markersize',10.5,'linewidth',2,'DisplayName', 'TT-Rounding')
 
 xticks(5*(1:7))
@@ -101,8 +101,8 @@ grid on;
 hold off
 
 sp3 = subplot(3,2,5,'Parent',f);
-plot(5*(1:length(mean_compRandKRP)), mean_compRandKRP,   'r*-','markersize',10.5,'linewidth',2,'DisplayName', 'TT-KRP (Adap)'); hold on
-plot(5*(1:length(mean_compRandLR)),  mean_compRandLR,'b+-','markersize',10.5,'linewidth',2,'DisplayName', 'TT-Orth-Rand (Adap)')
+plot(5*(1:length(mean_compRandKRP)), mean_compRandKRP,   'r*-','markersize',10.5,'linewidth',2,'DisplayName', 'Rand-Orth-KRP (Adap)'); hold on
+plot(5*(1:length(mean_compRandLR)),  mean_compRandLR,'b+-','markersize',10.5,'linewidth',2,'DisplayName', 'Orth-Rand (Adap)')
 plot(5*(1:length(mean_compLR)), mean_compLR,'ko-','markersize',10.5,'linewidth',2,'DisplayName', 'TT-Rounding')
 
 xticks(5*(1:7))
@@ -167,8 +167,8 @@ x = 1:size(errorsLR, 1);  % Assuming same number of rows for all
 sp4 = subplot(3,2,2,'Parent',f);
 hold on;
 p1 = errorbar(5*x, med_LR, err_low_LR, err_high_LR, 'ko', 'LineWidth', 2,'MarkerSize', 10, 'DisplayName', 'TT-Rounding');
-p2= errorbar(5*x, med_RandKtr, err_low_RandKtr, err_high_RandKtr, 's','Color','#DC143C','LineWidth', 2,'MarkerSize', 10,   'DisplayName','TT-KRP (Adap-R)');
-p3 = errorbar(5*x, med_RandLR, err_low_RandLR, err_high_RandLR, 'b+','LineWidth', 2,'MarkerSize', 10,  'DisplayName', 'TT-Orth-Rand (Adap)');
+p2= errorbar(5*x, med_RandKtr, err_low_RandKtr, err_high_RandKtr, 's','Color','#DC143C','LineWidth', 2,'MarkerSize', 10,   'DisplayName','Rand-Orth-KRP (Adap-R)');
+p3 = errorbar(5*x, med_RandLR, err_low_RandLR, err_high_RandLR, 'b+','LineWidth', 2,'MarkerSize', 10,  'DisplayName', 'Orth-Rand (Adap)');
 
 xticks(5*x)
 xticklabels({'1e-1','1e-2', '1e-3', '1e-4', '1e-5','1e-6','1e-7'})
@@ -186,9 +186,9 @@ hold off
 
 sp5 = subplot(3,2,4,'Parent',f);
 hold on
-plot(5*(1:length(mean_speedupRandKtr)), mean_speedupRandKtr,   'r*-','markersize',10.5,'linewidth',2,'DisplayName', 'TT-KRP (Adap)'); hold on
-plot(5*(1:length(mean_speedupRandKtr_round)), mean_speedupRandKtr_round,   's--','Color','#DC143C','markersize',10.5,'linewidth',2,'DisplayName', 'TT-KRP (Adap-R)'); hold on
-plot(5*(1:length(mean_speedupRandLR)),  mean_speedupRandLR,'b+-','markersize',10.5,'linewidth',2,'DisplayName', 'TT-Orth-Rand (Adap)')
+plot(5*(1:length(mean_speedupRandKtr)), mean_speedupRandKtr,   'r*-','markersize',10.5,'linewidth',2,'DisplayName', 'Rand-Orth-KRP (Adap)'); hold on
+plot(5*(1:length(mean_speedupRandKtr_round)), mean_speedupRandKtr_round,   's--','Color','#DC143C','markersize',10.5,'linewidth',2,'DisplayName', 'Rand-Orth-KRP (Adap-R)'); hold on
+plot(5*(1:length(mean_speedupRandLR)),  mean_speedupRandLR,'b+-','markersize',10.5,'linewidth',2,'DisplayName', 'Orth-Rand (Adap)')
 plot(5*(1:length(mean_speedupLR)), mean_speedupLR,'ko-','markersize',10.5,'linewidth',2,'DisplayName', 'TT-Rounding')
 
 xticks(5*(1:7))
@@ -205,8 +205,8 @@ hold off
 
 sp6 = subplot(3,2,6,'Parent',f);
 p1 = plot(5*(1:length(mean_compLR)), mean_compLR,'ko-','markersize',10.5,'linewidth',2,'DisplayName', 'TT-Rounding');hold on
-p2 = plot(5*(1:length(mean_compRandKRP_round)), mean_compRandKRP_round,   's--','Color','#DC143C','markersize',10.5,'linewidth',2,'DisplayName', 'TT-KRP (Adap-R)'); 
-p3 = plot(5*(1:length(mean_compRandLR)),  mean_compRandLR,'b+-','markersize',10.5,'linewidth',2,'DisplayName', 'TT-Orth-Rand (Adap)');
+p2 = plot(5*(1:length(mean_compRandKRP_round)), mean_compRandKRP_round,   's--','Color','#DC143C','markersize',10.5,'linewidth',2,'DisplayName', 'Rand-Orth-KRP (Adap-R)'); 
+p3 = plot(5*(1:length(mean_compRandLR)),  mean_compRandLR,'b+-','markersize',10.5,'linewidth',2,'DisplayName', 'Orth-Rand (Adap)');
 
 xticks(5*(1:7))
 xticklabels({'1e-1','1e-2', '1e-3', '1e-4', '1e-5','1e-6','1e-7'})
@@ -224,11 +224,11 @@ box on
 hold off
 
 drawnow;
-set(lgd1,'Units', 'normalized','Position',[0.1335 0.710387399463807 0.159 0.0669999999999999], 'FontSize', 12);
-set(lgd2,'Units', 'normalized','Position',[0.322 0.513972556141716 0.143 0.111270777479893],'FontSize',10.6);
-set(lgd3,'Units', 'normalized','Position',[0.3055 0.258664245149759 0.159 0.0670241286863271],'FontSize',12)
-set(lgd4,'Units', 'normalized','Position',[0.5705 0.710071751852172 0.1675 0.0670241286863271],'FontSize',12);
-set(lgd5,'Units', 'normalized','Position',[0.76 0.540835826919197 0.145 0.0857908847184999],'FontSize',11);
-set(lgd6,'Units', 'normalized','Position',[0.7375 0.260674969010349 0.1675 0.0650134048257373],'FontSize',12);
+set(lgd1,'Units', 'normalized','Position',[0.13025 0.710387399463807 0.1595 0.0669999999999999], 'FontSize', 11.5);
+set(lgd2,'Units', 'normalized','Position',[0.318 0.515316642163222 0.147 0.111270777479893],'FontSize',10.3);
+set(lgd3,'Units', 'normalized','Position',[0.30425 0.258664245149759 0.1595 0.0670241286863271],'FontSize',11.5)
+set(lgd4,'Units', 'normalized','Position',[0.57025 0.710071751852172 0.172 0.067024128686327],'FontSize',11.5);
+set(lgd5,'Units', 'normalized','Position',[0.74425 0.540835826919197 0.1605 0.0857908847184999],'FontSize',10.5);
+set(lgd6,'Units', 'normalized','Position',[0.73225 0.260674969010349 0.172 0.0650134048257373],'FontSize',11.5);
 
 exportgraphics(f,'Fig5.png','Resolution', 400)

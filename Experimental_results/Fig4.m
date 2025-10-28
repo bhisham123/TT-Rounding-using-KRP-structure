@@ -16,9 +16,9 @@ f = figure('Position', [100, 100, 800, 280]);
 subplot(1,2,1)
 hold on
 p1 = errorbar(test_ranks, errLR, negLR, posLR,     'ko','markersize',10,'linewidth',2,'DisplayName','TT-Rounding');
-p2 = errorbar(test_ranks, errRandLR,   negRandLR,   posRandLR,    'b+','markersize',10,'linewidth',2,'DisplayName','TT-Orth-Rand (Fix)');
-p4 = errorbar(test_ranks, errRandOrth_krp, negRandOrth_krp, posRandOrth_krp,  'r*','markersize',10,'linewidth',2, 'DisplayName','TT-KRP (Fix)');
-p3 = errorbar(test_ranks, errRandOrth, negRandOrth, posRandOrth,  'x','Color','#7E2F8E','markersize',10,'linewidth',2,'DisplayName', 'TT-Rand-Orth');
+p2 = errorbar(test_ranks, errRandLR,   negRandLR,   posRandLR,    'b+','markersize',10,'linewidth',2,'DisplayName','Orth-Rand (Fix)');
+p4 = errorbar(test_ranks, errRandOrth_krp, negRandOrth_krp, posRandOrth_krp,  'r*','markersize',10,'linewidth',2, 'DisplayName','Rand-Orth-KRP (Fix)');
+p3 = errorbar(test_ranks, errRandOrth, negRandOrth, posRandOrth,  'x','Color','#7E2F8E','markersize',10,'linewidth',2,'DisplayName', 'Rand-Orth');
 hold off
 
 yticks([1e-5,1e-4,1e-3,1e-2,1e-1, 1e0])
@@ -27,7 +27,8 @@ ax = gca;
 ax.YScale = 'log';
 xlabel('Maximum Target Rank', 'FontSize', 16)
 ylabel('Relative Error', 'FontSize', 16)
-legend([p4,p3,p2,p1],'Location', 'northeast')
+legend1 = legend([p4,p3,p2,p1]);
+set(legend1,'Position',[0.256875 0.674301843317972 0.2075 0.248214285714286]);
 set(gca,'FontSize',15)
 grid on;
 box on;
@@ -43,14 +44,16 @@ box on;
 subplot(1,2,2)
 hold on
 p1= plot(test_ranks, speedupLR,       'ko-','markersize',10,'linewidth',2,'DisplayName','TT-Rounding');
-p2 = plot(test_ranks, speedupRandLR,     'b+-','markersize',10,'linewidth',2,'DisplayName','TT-Orth-Rand (Fix)');
-p3 = plot(test_ranks, speedupRandOrth,  'x-','Color','#7E2F8E','markersize',10,'linewidth',2,'DisplayName', 'TT-Rand-Orth');
-p4 = plot(test_ranks, speedupRandOrth_krp, 'r*-','markersize',10,'linewidth',2,'DisplayName','TT-KRP (Fix)');
+p2 = plot(test_ranks, speedupRandLR,     'b+-','markersize',10,'linewidth',2,'DisplayName','Orth-Rand (Fix)');
+p3 = plot(test_ranks, speedupRandOrth,  'x-','Color','#7E2F8E','markersize',10,'linewidth',2,'DisplayName', 'Rand-Orth');
+p4 = plot(test_ranks, speedupRandOrth_krp, 'r*-','markersize',10,'linewidth',2,'DisplayName','Rand-Orth-KRP (Fix)');
     
 hold off
 xlabel('Maximum Target Rank', 'FontSize', 16)
 ylabel('Speedup', 'FontSize', 16)
-legend([p4,p3,p2,p1],'Location', 'northeast')
+legend2 = legend([p4,p3,p2,p1]);
+set(legend2,'Position',[0.6975 0.674301843317972 0.2075 0.248214285714286]);
+
 set(gca,'FontSize',15)
 box on;
 grid on;
