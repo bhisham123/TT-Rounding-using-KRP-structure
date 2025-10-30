@@ -2,8 +2,7 @@
 
 This repository contains MATLAB code to reproduce the experiments presented in the paper:
 
-**"Adaptive Randomized Tensor Train Rounding using Khatri-Rao Products"**  
-*Submitted, 2025*
+**"Adaptive Randomized Tensor Train Rounding using Khatri-Rao Products"** by *Hussam Al Daas, Grey Ballard, Laura Grigori, Mariana Martinez Aguilar, Arvind K. Saibaba  and Bhisham Dev Verma* (Submitted, 2025).
 
 ---
 
@@ -20,14 +19,3 @@ This repository contains MATLAB code to reproduce the experiments presented in t
 
 ---
 
-## 📚 Reference
-
-If you use this code in your research, please cite the following:
-
-```bibtex
-@article{adaptive_tt_krp_2025,
-  title     = {Adaptive Randomized Tensor Train Rounding using Khatri-Rao Products},
-  author    = {},
-  journal   = {},
-  year      = {2025}
-}
